@@ -1,0 +1,20 @@
+template:
+  template_id: "lMhN9S1JmkOsrUGE1P8oO7QQ-AEhrqC26mB3AvrQKQ0"
+  url: "*url"
+  topcolor: "#FF0000"
+  data:
+    first:
+      value: "*first"
+      color: "#0A0A0A"
+    keyword1:
+      value: "*keyword1"
+      color: "#0A0A0A"
+    keyword2:
+      value: "*keyword2"
+      color: "#0A0A0A"
+    keyword3:
+      value: "*keyword3"
+      color: "#0A0A0A"
+    remark:
+      value: "请及时审核，谢谢"
+      color: "#F85959"

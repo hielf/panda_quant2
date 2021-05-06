@@ -1,0 +1,6 @@
+articles:
+ -
+  title: "*title1"
+  description: "*description1"
+  url: "*url1"
+  pic_url: "*pic_url1"

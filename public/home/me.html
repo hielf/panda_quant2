@@ -1,0 +1,123 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width,initial-scale=1,user-scalable=0">
+        <title>个人中心</title>
+        <!-- 引入 WeUI -->
+        <!-- <link rel="stylesheet" href="path/to/weui/dist/style/weui.min.css"/> -->
+        <link rel="stylesheet" href="https://cdn.bootcss.com/weui/1.1.2/style/weui.min.css">
+        <link rel="stylesheet" href="https://cdn.bootcss.com/jquery-weui/1.1.2/css/jquery-weui.min.css">
+    </head>
+    <body style="background-color:#f0eff5">
+      <div id="body">
+        <div class="weui-cells">
+          <div class="weui-cell">
+            <div class="weui-cell__bd">
+              <p>姓名</p>
+            </div>
+            <div id="name" class="weui-cell__ft"></div>
+          </div>
+          <div class="weui-cell">
+            <div class="weui-cell__bd">
+              <p>手机号码</p>
+            </div>
+            <div id="mobile" class="weui-cell__ft"></div>
+          </div>
+          <div class="weui-cell">
+            <div class="weui-cell__bd">
+              <p>员工类型</p>
+            </div>
+            <div id="role" class="weui-cell__ft"></div>
+          </div>
+          <div class="weui-cell">
+            <div class="weui-cell__bd">
+              <p>员工ID</p>
+            </div>
+            <div id="username" class="weui-cell__ft"></div>
+          </div>
+          <div class="weui-cell">
+            <div class="weui-cell__bd">
+              <p>所在地区</p>
+            </div>
+            <div id="area" class="weui-cell__ft"></div>
+          </div>
+          <div class="weui-cell">
+            <div class="weui-cell__bd">
+              <p>状态</p>
+            </div>
+            <div id="status" class="weui-cell__ft"></div>
+          </div>
+        </div>
+
+        <div id="outworker" class="weui-cells">
+          <div class="weui-cell">
+            <div class="weui-cell__bd">
+              <p>客户团队</p>
+            </div>
+            <div id="team" class="weui-cell__ft"></div>
+          </div>
+          <div class="weui-cell">
+            <div class="weui-cell__bd">
+              <p>所属门店</p>
+            </div>
+            <div id="shop" class="weui-cell__ft"></div>
+          </div>
+          <div class="weui-cell">
+            <div class="weui-cell__bd">
+              <p>所属销售员</p>
+            </div>
+            <div id="upper_user" class="weui-cell__ft"></div>
+          </div>
+        </div>
+
+        <div id="staff" class="weui-cells">
+          <div class="weui-cell">
+            <div class="weui-cell__bd">
+              <p>客户团队</p>
+            </div>
+            <div id="team_members_count" class="weui-cell__ft"></div>
+          </div>
+        </div>
+      </div>
+
+      <script src="/js/config.js"></script>
+      <script src="https://cdn.bootcss.com/jquery/1.11.0/jquery.min.js"></script>
+      <script src="https://cdn.bootcss.com/jquery-weui/1.1.2/js/jquery-weui.min.js"></script>
+      <script src="/js/jquery.cookie.js"></script>
+      <script src="/js/cookie.js"></script>
+      <script>
+      $(function(){
+        // console.log(token);
+        // console.log(username);
+         $.ajax({
+           url: root_url+"api/users/me",
+           method: "GET",
+           dataType: "json",
+           beforeSend: function(request) {
+               request.setRequestHeader("Authorization", "Token token=" + token + ", username=" + username);
+           },
+           success:function(res){
+             console.log(res.status);
+             if (res.status == 401) window.location.href = 'login';
+             else {
+               var role=res.data.user.role;
+               $('#name').text(res.data.user.name);
+               $('#mobile').text(res.data.user.mobile);
+               $('#role').text(res.data.user.role);
+               $('#username').text(res.data.user.username);
+               $('#status').text(res.data.user.status);
+               $('#area').text(res.data.user.area);
+               $('#team').text(res.data.user.team);
+               $('#shop').text(res.data.user.shop);
+               $('#upper_user').text(res.data.user.upper_user);
+               $('#team_members_count').text(res.data.user.team_members_count);
+                if (role=="销售员") $('#outworker').hide();
+                if (role=="促销员") $('#staff').hide();
+             }
+           }
+         });
+      });
+    </script>
+    </body>
+</html>

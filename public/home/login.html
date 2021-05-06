@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width,initial-scale=1,user-scalable=0">
+        <title>登录</title>
+        <!-- 引入 WeUI -->
+        <!-- <link rel="stylesheet" href="path/to/weui/dist/style/weui.min.css"/> -->
+        <link rel="stylesheet" href="https://cdn.bootcss.com/weui/1.1.2/style/weui.min.css">
+        <link rel="stylesheet" href="https://cdn.bootcss.com/jquery-weui/1.1.2/css/jquery-weui.min.css">
+    </head>
+    <body style="background-color:#f0eff5">
+      <div id="body">
+        <div class="weui-cells__tips">请输入员工ID和密码</div>
+        <div class="weui-cells weui-cells_form">
+          <div class="weui-cell">
+            <div class="weui-cell__hd"><label class="weui-label">员工ID</label></div>
+            <div class="weui-cell__bd">
+              <input id="username" class="weui-input" type="number" pattern="[0-9]*" placeholder="员工ID号码">
+            </div>
+          </div>
+          <div class="weui-cell">
+            <div class="weui-cell__hd"><label class="weui-label">密码</label></div>
+            <div class="weui-cell__bd">
+              <input id="password" class="weui-input" type="password" placeholder="请输入密码">
+            </div>
+          </div>
+
+          <div class="weui-btn-area">
+            <a class="weui-btn weui-btn_primary" href="javascript:" id="submit">确定</a>
+          </div>
+        </div>
+      </div>
+
+      <script src="/js/config.js"></script>
+      <script src="https://cdn.bootcss.com/jquery/1.11.0/jquery.min.js"></script>
+      <script src="https://cdn.bootcss.com/jquery-weui/1.1.2/js/jquery-weui.min.js"></script>
+      <script>
+      $("#submit").click(function() {
+        var username = $('#username').val();
+        var password = $('#password').val();
+        if(!username) $.toptip('请输入员工ID');
+        else if(!password) $.toptip('请输入密码');
+        else $.ajax
+            ({
+              url: root_url+'api/accounts/sign_in',
+              data: {"username": username, "password": password},
+              type: 'post',
+              success: function(result)
+              {
+                if (result.status == 401) $.toptip(result.message, 'error');
+                else {
+                  $.toptip(result.message, 'success');
+                  setTimeout(
+                    function()
+                    {
+                      window.location.href = 'me';
+                    }, 500);
+                  }
+                },
+                error: function(XMLHttpRequest, textStatus, errorThrown) {
+                  $.toptip(result.message, 'error');
+                }
+            });
+      });
+    </script>
+    </body>
+</html>
