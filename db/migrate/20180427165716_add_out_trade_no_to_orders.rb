@@ -1,4 +1,4 @@
-class AddOutTradeNoToOrders < ActiveRecord::Migration[5.1]
+class AddOutTradeNoToOrders < ActiveRecord::Migration[6.1]
   def change
     add_column :orders, :out_trade_no, :string
 

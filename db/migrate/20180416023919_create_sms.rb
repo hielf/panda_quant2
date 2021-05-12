@@ -1,4 +1,4 @@
-class CreateSms < ActiveRecord::Migration[5.1]
+class CreateSms < ActiveRecord::Migration[6.1]
   def change
     create_table :sms do |t|
       t.string :mobile

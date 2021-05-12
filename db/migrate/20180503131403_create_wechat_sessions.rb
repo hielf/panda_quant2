@@ -1,4 +1,4 @@
-class CreateWechatSessions < ActiveRecord::Migration[5.1]
+class CreateWechatSessions < ActiveRecord::Migration[6.1]
   def change
     create_table :wechat_sessions do |t|
       t.string :openid, null: false

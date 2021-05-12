@@ -1,4 +1,4 @@
-class CreateTradeOrders < ActiveRecord::Migration[5.1]
+class CreateTradeOrders < ActiveRecord::Migration[6.1]
   def change
     create_table :trade_orders do |t|
       t.string :capital_account
