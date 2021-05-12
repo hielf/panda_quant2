@@ -6,7 +6,7 @@ set :application, "panda_quant2"
 # set :user, "deploy"
 set :puma_threads, [4, 16]
 set :puma_workers, 0
-set :rails_env, 'production'
+# set :rails_env, 'production'
 # set :rvm_ruby_version, '2.4.0@panda_quant2'
 
 # Default branch is :master

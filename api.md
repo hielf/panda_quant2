@@ -129,24 +129,6 @@ root_url/api/accounts/miniprogram_sign_in
     }
 }
 
-***
-
-## 创建recommends
-
-***
-
-## 调用方式
-* Method: POST
-* Need: Auth
-
-```
-root_url/api/recommends
-```
-* 参数: recommend_date, stock_name, stock_code, note
-* 输出: {
-    "status": 0,
-    "message": "接收成功"
-}
 
 ***
 
