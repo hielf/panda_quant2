@@ -27,7 +27,7 @@ set :deploy_to, "/var/www/#{fetch(:application)}"
 # set :pty, true
 
 # Default value for :linked_files is []
-append :linked_files, "config/database.yml", "config/secrets.yml", "config/application.yml", "config/wechat.yml", "public/js/config.js"
+append :linked_files, "config/database.yml", "config/secrets.yml", "config/application.yml", "config/wechat.yml"
 
 # Default value for linked_dirs is []
 append :linked_dirs, "log", "tmp/pids", "tmp/cache", "tmp/sockets", 'tmp/image', "public/system"
@@ -73,13 +73,13 @@ namespace :puma do
 end
 
 namespace :deploy do
-  desc "stops god"
-  task :stop_god do
-    on roles(:app) do
-      execute "sudo -H -u deploy /bin/bash -l -c 'god stop'"
-    end
-  end
-  before 'deploy', 'deploy:stop_god'
+  # desc "stops god"
+  # task :stop_god do
+  #   on roles(:app) do
+  #     execute "sudo -H -u deploy /bin/bash -l -c 'god stop'"
+  #   end
+  # end
+  # before 'deploy', 'deploy:stop_god'
 
   desc "Make sure local git is in sync with remote."
   task :check_revision do
