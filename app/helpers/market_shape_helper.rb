@@ -41,24 +41,25 @@ module MarketShapeHelper
 
   def results_to_csv
     s=CSV.generate do |csv|
-    hashes = []
-    StockAnalysis.all.each do |sa|
-      hash = {}
-      hash["stock_code"] = sa.stock_code
-      hash["duration"] = sa.duration
-      hash["profit_ratio"] = sa.profit_ratio
-      hash.merge!(eval(sa.params))
-      hashes << hash
-    end;0
-
-    column_names = hashes.first.keys
-    s=CSV.generate do |csv|
-      csv << column_names
-      hashes.each do |x|
-        csv << x.values
+      hashes = []
+      StockAnalysis.all.each do |sa|
+        hash = {}
+        hash["stock_code"] = sa.stock_code
+        hash["duration"] = sa.duration
+        hash["profit_ratio"] = sa.profit_ratio
+        hash.merge!(eval(sa.params))
+        hashes << hash
       end
+
+      column_names = hashes.first.keys
+      s=CSV.generate do |csv|
+        csv << column_names
+        hashes.each do |x|
+          csv << x.values
+        end
+      end
+      File.write('results.csv', s)
     end
-    File.write('results.csv', s)
   end
 
 end
