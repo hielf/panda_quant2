@@ -6,8 +6,8 @@ class WechatsController < ApplicationController
   # Wechat.api.template_message_send Wechat::Message.to(openid).template(template['template'])
 
   # 默认文字信息 responder
-  on :text do |request, content|
-    request.reply.text "echo: #{content}" #Just echo
+  on :text, with: 'test' do |request, content|
+    request.reply.text "#{request[:FromUserName]}: #{content}" #Just echo
   end
 
   # # When user click the menu button
