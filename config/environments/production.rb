@@ -33,6 +33,8 @@ Rails.application.configure do
   # Store files locally.
   config.active_storage.service = :local
 
+  # config.require_master_key = true
+
   # `config.assets.precompile` and `config.assets.version` have moved to config/initializers/assets.rb
 
   # Enable serving of images, stylesheets, and JavaScripts from an asset server.

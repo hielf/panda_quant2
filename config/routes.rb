@@ -20,14 +20,6 @@ Rails.application.routes.draw do
         get :me
       end
     end
-    resources :recommends do
-      collection do
-        get :today
-        get :history
-        get :today_recommends
-        get :history_recommends
-      end
-    end
     resources :packages do
       collection do
         post :subscribe
@@ -42,11 +34,6 @@ Rails.application.routes.draw do
     resources :stock_lists do
       collection do
         get :user_history
-      end
-    end
-    resources :stock_reports do
-      collection do
-        # get :history
       end
     end
     # resources :trade_orders do
