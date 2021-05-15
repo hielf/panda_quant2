@@ -13,8 +13,8 @@ class WechatsController < ApplicationController
     openid = request[:FromUserName]
     path = Rails.root.to_s + "/app/views/templates/order_success.yml"
     template = YAML.load(File.read(path))
-    Wechat.api.template_message_send Wechat::Message.to(openid).template(template['template'])
-    # wechat.template_message_send Wechat::Message.to(openid).template(template['template'])
+    # Wechat.api.template_message_send Wechat::Message.to(openid).template(template['template'])
+    wechat.template_message_send Wechat::Message.to(openid).template(template['template'])
     # request.reply.text "http://wendao.easybird.cn/results/my_videos?user=#{request[:FromUserName]}"
 
     Rails.logger.warn "SUBSCRIBE by: #{openid}"
