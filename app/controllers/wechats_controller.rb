@@ -13,6 +13,13 @@ class WechatsController < ApplicationController
     openid = request[:FromUserName]
     path = Rails.root.to_s + "/app/views/templates/order_success.yml"
     template = YAML.load(File.read(path))
+    template["template"]["url"] = "http://"
+    template["template"]["data"]["first"]["value"] = "title"
+    template["template"]["data"]["keyword1"]["value"] = "时间"
+    template["template"]["data"]["keyword2"]["value"] = "类型"
+    template["template"]["data"]["keyword3"]["value"] = "描述"
+    template["template"]["data"]["keyword4"]["value"] = "状态"
+    template["template"]["data"]["remark"]["value"] = "备注"
     # Wechat.api.template_message_send Wechat::Message.to(openid).template(template['template'])
     wechat.template_message_send Wechat::Message.to(openid).template(template['template'])
     # request.reply.text "http://wendao.easybird.cn/results/my_videos?user=#{request[:FromUserName]}"
@@ -30,7 +37,7 @@ class WechatsController < ApplicationController
     #   "pic_url" => "https://api.dujin.org/bing/1366.php"
     #   }
     # wechat.custom_message_send Wechat::Message.to(openid).news(articles['articles'])
-    Rails.logger.warn "request: #{request}"
+    # Rails.logger.warn "request: #{request}"
     # request.reply.success
     # Rails.logger.warn "request.reply.success"
   end

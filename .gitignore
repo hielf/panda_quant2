@@ -55,3 +55,10 @@ lib/python/test/tmp.csv
 lib/python/test/result.json
 lib/python/market_shape/tmp.csv
 lib/python/market_shape/result.json
+
+/public/packs
+/public/packs-test
+/node_modules
+/yarn-error.log
+yarn-debug.log*
+.yarn-integrity

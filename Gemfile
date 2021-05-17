@@ -86,3 +86,5 @@ gem 'tzinfo-data'
 # gem 'dbf'
 gem 'clockwork'
 gem 'daemons'
+gem "webpacker", "~> 5.3"
+gem "react_on_rails", "= 12.2.0"
