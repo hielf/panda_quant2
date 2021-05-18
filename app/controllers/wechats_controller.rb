@@ -21,6 +21,7 @@ class WechatsController < ApplicationController
     template["template"]["data"]["keyword4"]["value"] = "状态"
     template["template"]["data"]["remark"]["value"] = "备注"
     # Wechat.api.template_message_send Wechat::Message.to(openid).template(template['template'])
+    # Wechat.api.custom_message_send Wechat::Message.to(openid).text("ggg")
     wechat.template_message_send Wechat::Message.to(openid).template(template['template'])
     # request.reply.text "http://wendao.easybird.cn/results/my_videos?user=#{request[:FromUserName]}"
 
