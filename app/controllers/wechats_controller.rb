@@ -2,8 +2,8 @@ class WechatsController < ApplicationController
   # For details on the DSL available within this file, see https://github.com/Eric-Guo/wechat#wechat_responder---rails-responder-controller-dsl
   wechat_responder
 
-  # 默认文字信息 responder
-  on :text, with: '/^1[3-9]\d{9}$/' do |request, content|
+  # 验证手机号
+  on :text, with: /^1[3-9]\d{9}$/ do |request, count|
     request.reply.text "已发送短信验证码至手机号码：#{content}/n请在下方的对话栏内回复6位数字验证码" #Just echo
   end
 
