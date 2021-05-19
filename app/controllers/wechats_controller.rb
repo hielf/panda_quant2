@@ -3,8 +3,8 @@ class WechatsController < ApplicationController
   wechat_responder
 
   # 默认文字信息 responder
-  on :text, with: 'test' do |request, content|
-    request.reply.text "#{request[:FromUserName]}: #{content}" #Just echo
+  on :text, with: '/^1[3-9]\d{9}$/' do |request, content|
+    request.reply.text "已发送短信验证码至手机号码：#{content}/n请在下方的对话栏内回复6位数字验证码" #Just echo
   end
 
   # When user click the menu button
@@ -22,6 +22,7 @@ class WechatsController < ApplicationController
     template["template"]["data"]["remark"]["value"] = "备注"
     # Wechat.api.template_message_send Wechat::Message.to(openid).template(template['template'])
     # Wechat.api.custom_message_send Wechat::Message.to(openid).text("ggg")
+    # Wechat.api.custom_message_send Wechat::Message.to(openid).text("ggg\n111\neee\n<a href='http://wechat.devzeng.com/register'>【点此开始注册】</a>")
     wechat.template_message_send Wechat::Message.to(openid).template(template['template'])
     # request.reply.text "http://wendao.easybird.cn/results/my_videos?user=#{request[:FromUserName]}"
 
