@@ -3,7 +3,7 @@ class WechatsController < ApplicationController
   wechat_responder
 
   # 验证手机号
-  on :text, with: /^1[3-9]\d{9}$/ do |request, count|
+  on :text, with: /^1[3-9]\d{9}$/ do |request, content|
     request.reply.text "已发送短信验证码至手机号码：#{content}/n请在下方的对话栏内回复6位数字验证码" #Just echo
   end
 
