@@ -5,14 +5,21 @@ class WechatsController < ApplicationController
   # 验证手机号
   on :text, with: /^1[3-9]\d{9}$/ do |request|
     openid = request[:FromUserName]
-    content = request[:Content]
+    mobile = request[:Content]
     # if content.match(/^1[3-9]\d{9}$/)
     #   true
     # end
     request.message_hash.each do |key, value|
       Rails.logger.warn "#{key}: #{value}"
     end
-    wechat.custom_message_send Wechat::Message.to(openid).text("已发送短信验证码至手机号码：#{content}\n请在下方的对话栏内回复6位数字验证码")
+
+    begin
+      SmsJob.perform_later mobile, "verify_code", ""
+    rescue Exception => ex
+      Rails.logger.warn "#{ex.message}"
+    end
+
+    wechat.custom_message_send Wechat::Message.to(openid).text("已发送短信验证码至手机号码：#{mobile}\n请在下方的对话栏内回复6位数字验证码")
     request.reply.success
     # request.reply.text "已发送短信验证码至手机号码：#{content}/n请在下方的对话栏内回复6位数字验证码"
   end

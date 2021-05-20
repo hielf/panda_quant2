@@ -3,7 +3,7 @@ class Sm < ApplicationRecord
   validates :generate_verify_code, presence: true, on: :create
 
   def generate_verify_code
-    self.verify_code = rand(1000..9999)
+    self.message = rand(1000..9999)
   end
 
   def send_code(str)
@@ -11,7 +11,7 @@ class Sm < ApplicationRecord
     return false unless sign(mobile) == str
 
     @var        = {}
-    @var["code"] = verify_code
+    @var["code"] = message
     uri         = URI.parse("https://api.submail.cn/message/xsend.json")
     username    = ENV['SMS_APPID']
     password    = ENV['SMS_APPKEY']
@@ -20,7 +20,7 @@ class Sm < ApplicationRecord
 
     status      = JSON.parse(res.body)["status"]
     if (status == "success")
-      return verify_code
+      return message
     else
       false
     end

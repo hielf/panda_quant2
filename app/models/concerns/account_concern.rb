@@ -10,7 +10,7 @@ module AccountConcern
     unless verify_code.present?
       return [false, '验证码不能为空']
     end
-    sms = Sm.where(mobile: self.mobile).last
+    sms = Sm.where(mobile: self.mobile, message_type: "verify_code").last
     unless sms.present? || verify_code == "mini"
       return [false, '手机号码不正确']
     end
@@ -18,7 +18,7 @@ module AccountConcern
     if self.failed_attempts.to_i >= limit_failed_attempts
       return [false, '账户已被锁定，请及时联系管理员']
     end
-    last_verify_code = sms.verify_code unless verify_code == "mini"
+    last_verify_code = sms.message unless verify_code == "mini"
     if last_verify_code == verify_code.to_s || verify_code == "mini"
       # 转移上次IP及时间纪录
       self.last_sign_in_at = self.current_sign_in_at
