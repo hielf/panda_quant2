@@ -6,8 +6,13 @@ class WechatsController < ApplicationController
   on :text, with: /^1[3-9]\d{9}$/ do |request|
     openid = request[:FromUserName]
     content = request[:content]
-    Rails.logger.warn "message openid: #{openid}"
-    Rails.logger.warn "content: #{content}"
+    # if content.match(/^1[3-9]\d{9}$/)
+    #   true
+    # end
+
+    request.each do |key, value|
+      Rails.logger.warn "#{key}: #{value}"
+    end
     request.reply.text "已发送短信验证码至手机号码：#{content}/n请在下方的对话栏内回复6位数字验证码" #Just echo
   end
 
