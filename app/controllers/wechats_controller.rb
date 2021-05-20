@@ -2,6 +2,19 @@ class WechatsController < ApplicationController
   # For details on the DSL available within this file, see https://github.com/Eric-Guo/wechat#wechat_responder---rails-responder-controller-dsl
   wechat_responder
 
+  on :event, with: 'subscribe' do |request|
+    openid = request[:FromUserName]
+    new_user = Wechat.api.user "oEJU4v32gZGQlCMCuUmZMDNgxUHs"
+    nickname = new_user["nickname"]
+    avatar = new_user["headimgurl"]
+    user = User.find_or_initialize_by(openid: openid)
+    if user.save!
+      user.update(nickname: nickname, avatar: avatar)
+    end
+    wechat.custom_message_send Wechat::Message.to(openid).text("欢迎关注本工具:\na)我们为您实时扫描订阅的证券行情\nb)在W形态买入点出现时向您发出通知")
+    request.reply.success
+  end
+
   # 验证手机号
   on :text, with: /^1[3-9]\d{9}$/ do |request|
     openid = request[:FromUserName]
@@ -19,9 +32,28 @@ class WechatsController < ApplicationController
       Rails.logger.warn "#{ex.message}"
     end
 
-    wechat.custom_message_send Wechat::Message.to(openid).text("已发送短信验证码至手机号码：#{mobile}\n请在下方的对话栏内回复6位数字验证码")
+    wechat.custom_message_send Wechat::Message.to(openid).text("已发送短信验证码至：#{mobile}\n请在下方的对话栏内输入4位数字验证码")
     request.reply.success
     # request.reply.text "已发送短信验证码至手机号码：#{content}/n请在下方的对话栏内回复6位数字验证码"
+  end
+
+  # 验证码
+  on :text, with: /^\d{4}$/ do |request|
+    openid = request[:FromUserName]
+    verify_code = request[:Content]
+
+    request.message_hash.each do |key, value|
+      Rails.logger.warn "#{key}: #{value}"
+    end
+
+    last_sm = Sm.where("message = ? AND message_type = ? AND created_at > ?", verify_code, "verify_code", 5.minutes.ago).last
+    if last_sm
+      user = User.find_by(openid: openid)
+      user.update(mobile: last_sm.mobile)
+      request.reply.text "验证通过"
+    else
+      request.reply.text "您输入的验证码有误，请重新输入或再次输入手机号获取验证码"
+    end
   end
 
   # When user click the menu button
@@ -59,6 +91,10 @@ class WechatsController < ApplicationController
     # Rails.logger.warn "request: #{request}"
     # request.reply.success
     # Rails.logger.warn "request.reply.success"
+  end
+
+  on :event, with: 'unsubscribe' do |request|
+    request.reply.success # user can not receive this message
   end
 
   # 当无任何 responder 处理用户信息时,使用这个 responder 处理
