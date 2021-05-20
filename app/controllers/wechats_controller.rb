@@ -13,6 +13,7 @@ class WechatsController < ApplicationController
       Rails.logger.warn "#{key}: #{value}"
     end
     wechat.custom_message_send Wechat::Message.to(openid).text("已发送短信验证码至手机号码：#{content}\n请在下方的对话栏内回复6位数字验证码")
+    request.reply.success
     # request.reply.text "已发送短信验证码至手机号码：#{content}/n请在下方的对话栏内回复6位数字验证码"
   end
 
