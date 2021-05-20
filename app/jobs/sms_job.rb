@@ -8,12 +8,12 @@ class SmsJob < ApplicationJob
     @message_type  = args[1]
     @message       = args[2]
 
-    last_sm = Sm.where("mobile = ? AND created_at > ?", mobile, 1.minutes.ago).last
+    last_sm = Sm.where("mobile = ? AND created_at > ?", @mobile, 1.minutes.ago).last
 
     if last_sm.nil?
       begin
-        sign = Digest::MD5.hexdigest(mobile.last(4))
-        @sms = Sm.create!(mobile: mobile, message_type: @message_type)
+        sign = Digest::MD5.hexdigest(@mobile.last(4))
+        @sms = Sm.create!(mobile: @mobile, message_type: @message_type)
         @sms.send_code(sign)
       rescue Exception => ex
         Rails.logger.warn "#{ex.message}"
