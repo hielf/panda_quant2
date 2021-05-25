@@ -65,7 +65,7 @@ class WechatsController < ApplicationController
     package_type = subscription.package_type.nil? ? "未订阅" : subscription.package_type
     # package = Package.find_by(package_type: subscription.package_type)
     user_stock_list = user.stock_lists
-    watch_num = subscription.watch_num.nil? 0 : (subscription.watch_num - user.stock_lists)
+    watch_num = subscription.watch_num.nil? ? 0 : (subscription.watch_num - user.stock_lists)
     wechat.custom_message_send Wechat::Message.to(openid).text("您当前使用的套餐为：
       #{package_type}\n已订阅数量为：
       #{user_stock_list.count}\n剩余可订阅数量：
