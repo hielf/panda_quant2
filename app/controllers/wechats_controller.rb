@@ -12,6 +12,7 @@ class WechatsController < ApplicationController
       user.update(nickname: nickname, avatar: avatar)
     end
     wechat.custom_message_send Wechat::Message.to(openid).text("欢迎关注本工具:\na)我们为您实时扫描订阅的证券行情\nb)在W形态买入点出现时向您发出通知")
+    wechat.custom_message_send Wechat::Message.to(openid).text("更多使用说明请浏览'帮助'")
     request.reply.success
   end
 
@@ -32,7 +33,7 @@ class WechatsController < ApplicationController
       Rails.logger.warn "#{ex.message}"
     end
 
-    wechat.custom_message_send Wechat::Message.to(openid).text("已发送短信验证码至：#{mobile}\n请在下方的对话栏内输入4位数字验证码")
+    wechat.custom_message_send Wechat::Message.to(openid).text("已发送短信验证码至：#{mobile}\n请在下方的对话栏内回复4位数字验证码")
     request.reply.success
     # request.reply.text "已发送短信验证码至手机号码：#{content}/n请在下方的对话栏内回复6位数字验证码"
   end
@@ -50,10 +51,29 @@ class WechatsController < ApplicationController
     if last_sm
       user = User.find_by(openid: openid)
       user.update(mobile: last_sm.mobile)
-      request.reply.text "验证通过"
+      request.reply.text "验证通过，已为您绑定接收通知的手机"
     else
       request.reply.text "您输入的验证码有误，请重新输入或再次输入手机号获取验证码"
     end
+  end
+
+  #subscribe
+  on :click, with: 'SUBSCRIBE' do |request, key|
+    openid = request[:FromUserName]
+    user = User.find_by(openid: openid)
+    subscription = user.subscriptions.last
+    package_type = subscription.package_type.nil? ? "未订阅" : subscription.package_type
+    # package = Package.find_by(package_type: subscription.package_type)
+    user_stock_list = user.stock_lists
+    watch_num = subscription.watch_num.nil? 0 : (subscription.watch_num - user.stock_lists)
+    wechat.custom_message_send Wechat::Message.to(openid).text("您当前使用的套餐为：
+      #{package_type}\n已订阅数量为：
+      #{user_stock_list.count}\n剩余可订阅数量：
+      #{subscription.watch_num - user.stock_lists}")
+    wechat.custom_message_send Wechat::Message.to(openid).text("请回复下列序号：")
+    wechat.custom_message_send Wechat::Message.to(openid).text("1）继续订阅\n2）查询当前订阅列表\n3）删除订阅")
+
+    request.reply.text "User: #{request[:FromUserName]} click #{key}"
   end
 
   # When user click the menu button

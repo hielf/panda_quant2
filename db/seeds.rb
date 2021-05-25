@@ -13,6 +13,9 @@
 #   cities = City.create([{ name: 'Chicago' }, { name: 'Copenhagen' }])
 #   Mayor.create(name: 'Emanuel', city: cities.first)
 
-Package.find_or_create_by(title: "包月套餐", period: "月", date_num: 30, market_price: 150, discount: 0.9, real_price: 150*0.9, package_type: "基础套餐", desc: "熊猫宽课AI推荐股票30天")
-Package.find_or_create_by(title: "半年套餐", period: "半年", date_num: 180, market_price: 800, discount: 0.9, real_price: 800*0.9, package_type: "基础套餐", desc: "熊猫宽课AI推荐股票180天")
-Package.find_or_create_by(title: "整年套餐", period: "一年", date_num: 365, market_price: 1500, discount: 0.9, real_price: 1500*0.9, package_type: "基础套餐", desc: "熊猫宽课AI推荐股票365天")
+Package.find_or_create_by(title: "包月套餐", period: "月", date_num: 30, market_price: 0.01, discount: 1, real_price: 0.01*1, package_type: "基础套餐", desc: "可关注2个代码", watch_num: 2)
+Package.find_or_create_by(title: "半年套餐", period: "半年", date_num: 180, market_price: 100, discount: 0.9, real_price: 100*0.9, package_type: "基础套餐", desc: "可关注10个代码", watch_num: 10)
+Package.find_or_create_by(title: "包年套餐", period: "一年", date_num: 365, market_price: 200, discount: 0.75, real_price: 200*0.9, package_type: "基础套餐", desc: "可关注10个代码", watch_num: 10)
+Package.find_or_create_by(title: "包月套餐", period: "月", date_num: 30, market_price: 90, discount: 1, real_price: 90*1, package_type: "高级套餐", desc: "可关注50个代码", watch_num: 50)
+Package.find_or_create_by(title: "半年套餐", period: "半年", date_num: 180, market_price: 500, discount: 0.9, real_price: 500*0.9, package_type: "高级套餐", desc: "可关注50个代码", watch_num: 50)
+Package.find_or_create_by(title: "包年套餐", period: "一年", date_num: 365, market_price: 1000, discount: 0.75, real_price: 1000*0.75, package_type: "高级套餐", desc: "可关注50个代码", watch_num: 50)
