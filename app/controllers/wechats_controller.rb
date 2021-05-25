@@ -62,14 +62,14 @@ class WechatsController < ApplicationController
     openid = request[:FromUserName]
     user = User.find_by(openid: openid)
     subscription = user.subscriptions.last
-    package_type = subscription.package_type.nil? ? "未订阅" : subscription.package_type
+    package_type = subscription.nil? ? "未订阅" : subscription.package_type
     # package = Package.find_by(package_type: subscription.package_type)
     user_stock_list = user.stock_lists
-    watch_num = subscription.watch_num.nil? ? 0 : (subscription.watch_num - user.stock_lists)
+    rest_watch_num = subscription.nil? ? 0 : (subscription.watch_num - user_stock_list.count)
     wechat.custom_message_send Wechat::Message.to(openid).text("您当前使用的套餐为：
       #{package_type}\n已订阅数量为：
       #{user_stock_list.count}\n剩余可订阅数量：
-      #{subscription.watch_num - user.stock_lists}")
+      #{rest_watch_num}")
     wechat.custom_message_send Wechat::Message.to(openid).text("请回复下列序号：")
     wechat.custom_message_send Wechat::Message.to(openid).text("1）继续订阅\n2）查询当前订阅列表\n3）删除订阅")
 
