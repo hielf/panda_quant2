@@ -1,4 +1,13 @@
-module RecommendsHelper
+module SubscriptionsHelper
+
+  def has_subscribe(user)
+    flag = false
+    subscription = user.subscriptions.last
+    if !subscription.nil? && subscription.end_date >= Date.today
+      flag = true
+    end
+    return flag
+  end
 
   def get_stock_price(recommends)
     a = []

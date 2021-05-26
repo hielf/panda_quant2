@@ -61,13 +61,43 @@ class WechatsController < ApplicationController
   on :click, with: 'SUBSCRIBE' do |request, key|
     openid = request[:FromUserName]
     user = User.find_by(openid: openid)
-    subscription = user.subscriptions.last
-    package_type = subscription.nil? ? "未订阅" : subscription.package_type
-    # package = Package.find_by(package_type: subscription.package_type)
-    user_stock_list = user.stock_lists
-    rest_watch_num = subscription.nil? ? 0 : (subscription.watch_num - user_stock_list.count)
-    wechat.custom_message_send Wechat::Message.to(openid).text("您当前使用的套餐：#{package_type}\n已订阅数量：#{user_stock_list.count}\n剩余可订阅数量：#{rest_watch_num}")
-    wechat.custom_message_send Wechat::Message.to(openid).text("请回复下列序号操作：\n1）继续订阅\n2）查询当前订阅列表\n3）删除订阅")
+
+    if ApplicationController.helpers.has_subscribe(user)
+      subscription = user.subscriptions.last
+      package_type = subscription.nil? ? "未订阅" : subscription.package_type
+      # package = Package.find_by(package_type: subscription.package_type)
+      user_stock_list = user.stock_lists
+      rest_watch_num = subscription.nil? ? 0 : (subscription.watch_num - user_stock_list.count)
+      wechat.custom_message_send Wechat::Message.to(openid).text("您当前使用的套餐：#{package_type}\n已订阅数量：#{user_stock_list.count}\n剩余可订阅数量：#{rest_watch_num}")
+      wechat.custom_message_send Wechat::Message.to(openid).text("请回复下列序号操作：\n1. 继续订阅\n2. 查询当前订阅列表\n3. 删除订阅")
+    else
+      wechat.custom_message_send Wechat::Message.to(openid).text("请选择您的套餐：\n1. 基础套餐(关注上限10个代码)\n2. 高级套餐(关注上限50个代码)")
+    end
+    # request.reply.text "User: #{request[:FromUserName]} click #{key}"
+    request.reply.success
+  end
+
+  #package
+  on :click, with: 'PACKAGE' do |request, key|
+    openid = request[:FromUserName]
+    user = User.find_by(openid: openid)
+    subscribes = []
+    user.subscriptions.each do |s|
+      subscribes << [s.package_type, s.start_date, s.end_date, s.watch_num]
+    end
+
+    wechat.custom_message_send Wechat::Message.to(openid).text("新用户请直接选择需要的套餐\n老用户可以在已有订阅的基础上叠加新套餐\n详细说明请查看'帮助'")
+    wechat.custom_message_send Wechat::Message.to(openid).text("您当前的订阅情况：#{subscribes.map{|s| '\n' + s[0] + ': ' + s[1].to_s + ' - ' + s[2].to_s + '\n'}}") if !subscribes.empty?
+    wechat.custom_message_send Wechat::Message.to(openid).text("请选择您的套餐：\n1. 基础套餐(关注上限10个代码)\n2. 高级套餐(关注上限50个代码)")
+    # request.reply.text "User: #{request[:FromUserName]} click #{key}"
+    request.reply.success
+  end
+
+  #help
+  on :click, with: 'HELP' do |request, key|
+    openid = request[:FromUserName]
+    wechat.custom_message_send Wechat::Message.to(openid).text("本工具能为您提供：\n1. 监测日线行情股票走势\n2. 当被关注的股票出现W形态行情时，发送短信、微信通知")
+    wechat.custom_message_send Wechat::Message.to(openid).text("订阅成功后，订阅期限将自动延长\n如续期变更套餐的，在新套餐开始前延续现有套餐的关注上限，在新套餐生效后会自动转为新的关注上限")
 
     # request.reply.text "User: #{request[:FromUserName]} click #{key}"
     request.reply.success
