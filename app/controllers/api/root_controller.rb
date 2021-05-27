@@ -19,8 +19,8 @@ module Api
       api.users
       config_file = Rails.root.join('config/wechat.yml')
       wechat_config = YAML.load(ERB.new(File.read(config_file)).result)
-      f = File.read(wechat_config["default"]["access_token"])
-      # f = File.read(wechat_config["default"]["jsapi_ticket"])
+      f = File.read(wechat_config["production"]["access_token"])
+      # f = File.read(wechat_config["production"]["jsapi_ticket"])
       data = JSON.parse(f)
       access_token = data["access_token"]
       url = "https://api.weixin.qq.com/cgi-bin/ticket/getticket?access_token=#{access_token}&type=jsapi"
@@ -47,8 +47,8 @@ module Api
       config_file = Rails.root.join('config/wechat.yml')
       wechat_config = YAML.load(ERB.new(File.read(config_file)).result)
 
-      appid = wechat_config["default"]["appid"]
-      secret = wechat_config["default"]["secret"]
+      appid = wechat_config["production"]["appid"]
+      secret = wechat_config["production"]["secret"]
       code = params[:code]
 
       url = "https://api.weixin.qq.com/sns/oauth2/access_token?appid=#{appid}&secret=#{secret}&code=#{code}&grant_type=authorization_code"
@@ -67,8 +67,8 @@ module Api
       config_file = Rails.root.join('config/wechat.yml')
       wechat_config = YAML.load(ERB.new(File.read(config_file)).result)
 
-      appid = wechat_config["default"]["appid"]
-      secret = wechat_config["default"]["secret"]
+      appid = wechat_config["production"]["appid"]
+      secret = wechat_config["production"]["secret"]
       code = params[:code]
       #2
       url = "https://api.weixin.qq.com/sns/oauth2/access_token?appid=#{appid}&secret=#{secret}&code=#{code}&grant_type=authorization_code"
@@ -106,8 +106,8 @@ module Api
       config_file = Rails.root.join('config/wechat.yml')
       wechat_config = YAML.load(ERB.new(File.read(config_file)).result)
 
-      appid = wechat_config["default"]["mini_appid"]
-      secret = wechat_config["default"]["mini_secret"]
+      appid = wechat_config["production"]["mini_appid"]
+      secret = wechat_config["production"]["mini_secret"]
       code = params[:code]
       #2
       url = "https://api.weixin.qq.com/sns/jscode2session?appid=#{appid}&secret=#{secret}&js_code=#{code}&grant_type=authorization_code"

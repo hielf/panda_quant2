@@ -106,6 +106,10 @@ class WechatsController < ApplicationController
     user = User.find_by(openid: openid)
     user.op("text", op) if user
 
+    request.message_hash.each do |key, value|
+      Rails.logger.warn "#{key}: #{value}"
+    end
+
     last_op_type, last_op_message  = user.last_op
 
     if last_op_type == "click" && last_op_message == "PACKAGE"
