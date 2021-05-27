@@ -1,3 +1,3 @@
-class Subscription < ApplicationRecord
+class Subscribtion < ApplicationRecord
 
 end

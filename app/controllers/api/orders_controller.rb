@@ -49,12 +49,12 @@ class Api::OrdersController < Api::ApplicationController
 
     if WxPay::Sign.verify?(result)
       if order.pay
-        Subscription.transaction do
+        Subscribtion.transaction do
           user = order.user
           package = order.package
-          start_date = user.subscriptions.maximum(:end_date).nil? ? Date.today : user.subscriptions.maximum(:end_date)
+          start_date = user.subscribtions.maximum(:end_date).nil? ? Date.today : user.subscribtions.maximum(:end_date)
           end_date = start_date + package.date_num
-          user.subscriptions.create!(start_date: start_date, end_date: end_date, package_type: package.package_type, watch_num: package.watch_num)
+          user.subscribtions.create!(start_date: start_date, end_date: end_date, package_type: package.package_type, watch_num: package.watch_num)
         end
       end
       render :xml => {return_code: "SUCCESS"}.to_xml(root: 'xml', dasherize: false)

@@ -1,7 +1,7 @@
 class User < ApplicationRecord
   include AccountConcern
   # has_secure_password
-  has_many :subscriptions, dependent: :destroy
+  has_many :subscribtions, dependent: :destroy
   has_many :orders, dependent: :destroy
   has_many :user_stock_list_rels
   has_many :stock_lists, :through => :user_stock_list_rels

@@ -67,7 +67,7 @@ class Api::UsersController < Api::ApplicationController
 
   def me
     @user = current_user
-    @subscribe = @user.subscriptions
+    @subscribe = @user.subscribtions
   end
 
 

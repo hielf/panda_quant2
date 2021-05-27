@@ -1,9 +1,9 @@
-module SubscriptionsHelper
+module SubscribtionsHelper
 
   def has_subscribe(user)
     flag = false
-    subscription = user.subscriptions.last
-    if !subscription.nil? && subscription.end_date >= Date.today
+    subscribtion = user.subscribtions.last
+    if !subscribtion.nil? && subscribtion.end_date >= Date.today
       flag = true
     end
     return flag
