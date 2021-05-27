@@ -104,7 +104,7 @@ class WechatsController < ApplicationController
     openid = request[:FromUserName]
     op = request[:Content]
     user = User.find_by(openid: openid)
-    user.op("text", command) if user
+    user.op("text", op) if user
 
     last_op_type, last_op_message  = user.last_op
 
