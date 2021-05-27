@@ -11,10 +11,11 @@ class WechatsController < ApplicationController
     if user.save!
       user.update(nickname: nickname, avatar: avatar)
     end
-    user.op("event", "subscribe") if user
     wechat.custom_message_send Wechat::Message.to(openid).text("欢迎关注本工具:\na)我们为您实时扫描订阅的证券行情\nb)在W形态买入点出现时向您发出通知")
     wechat.custom_message_send Wechat::Message.to(openid).text("更多使用说明请浏览'帮助'")
+
     request.reply.success
+    user.op("event", "subscribe") if user
   end
 
   # 验证手机号
@@ -25,7 +26,6 @@ class WechatsController < ApplicationController
     # if content.match(/^1[3-9]\d{9}$/)
     #   true
     # end
-    user.op("text", mobile) if user
     request.message_hash.each do |key, value|
       Rails.logger.warn "#{key}: #{value}"
     end
@@ -37,7 +37,9 @@ class WechatsController < ApplicationController
     end
 
     wechat.custom_message_send Wechat::Message.to(openid).text("已发送短信验证码至：#{mobile}\n请在下方的对话栏内回复4位数字验证码")
+
     request.reply.success
+    user.op("text", mobile) if user
     # request.reply.text "已发送短信验证码至手机号码：#{content}/n请在下方的对话栏内回复6位数字验证码"
   end
 
@@ -46,7 +48,7 @@ class WechatsController < ApplicationController
     openid = request[:FromUserName]
     verify_code = request[:Content]
     user = User.find_by(openid: openid)
-    user.op("text", verify_code) if user
+    reply = ""
 
     request.message_hash.each do |key, value|
       Rails.logger.warn "#{key}: #{value}"
@@ -55,17 +57,19 @@ class WechatsController < ApplicationController
     last_sm = Sm.where("message = ? AND message_type = ? AND created_at > ?", verify_code, "verify_code", 5.minutes.ago).last
     if last_sm
       user.update(mobile: last_sm.mobile)
-      request.reply.text "验证通过，已为您绑定接收通知的手机"
+      reply = "验证通过，已为您绑定接收通知的手机"
     else
-      request.reply.text "您输入的验证码有误，请重新输入或再次输入手机号获取验证码"
+      reply = "您输入的验证码有误，请重新输入或再次输入手机号获取验证码"
     end
+
+    request.reply.text reply
+    user.op("text", verify_code) if user
   end
 
   #subscribe
   on :click, with: 'SUBSCRIBE' do |request, key|
     openid = request[:FromUserName]
     user = User.find_by(openid: openid)
-    user.op("click", "SUBSCRIBE") if user
 
     if ApplicationController.helpers.has_subscribe(user)
       subscribtion = user.subscribtions.last
@@ -79,14 +83,16 @@ class WechatsController < ApplicationController
       wechat.custom_message_send Wechat::Message.to(openid).text("请先选择您的套餐,限时最低0.01元起")
     end
     # request.reply.text "User: #{request[:FromUserName]} click #{key}"
+
     request.reply.success
+    user.op("click", "SUBSCRIBE") if user
   end
 
   #package
   on :click, with: 'PACKAGE' do |request, key|
     openid = request[:FromUserName]
     user = User.find_by(openid: openid)
-    user.op("click", "PACKAGE") if user
+
     subscribes = []
     user.subscribtions.each do |s|
       subscribes << [s.package_type, s.start_date, s.end_date, s.watch_num]
@@ -96,15 +102,16 @@ class WechatsController < ApplicationController
     wechat.custom_message_send Wechat::Message.to(openid).text("您当前的订阅情况：#{subscribes.map{|s| '\n' + s[0] + ': ' + s[1].to_s + ' - ' + s[2].to_s + '\n'}}") if !subscribes.empty?
     wechat.custom_message_send Wechat::Message.to(openid).text("请选择您的套餐：\n1. 基础套餐(关注上限10个代码)\n2. 高级套餐(关注上限50个代码)")
     # request.reply.text "User: #{request[:FromUserName]} click #{key}"
+
     request.reply.success
+    user.op("click", "PACKAGE") if user
   end
 
-  # 指令操作
+  # 指令操作 Level 1
   on :text, with: /^\d{1}$/ do |request|
     openid = request[:FromUserName]
     op = request[:Content]
     user = User.find_by(openid: openid)
-    user.op("text", op) if user
 
     request.message_hash.each do |key, value|
       Rails.logger.warn "#{key}: #{value}"
@@ -120,18 +127,20 @@ class WechatsController < ApplicationController
 
     request.reply.success
     # request.reply.text "已发送短信验证码至手机号码：#{content}/n请在下方的对话栏内回复6位数字验证码"
+    user.op("text", op) if user
   end
 
   #help
   on :click, with: 'HELP' do |request, key|
     openid = request[:FromUserName]
     user = User.find_by(openid: openid)
-    user.op("click", "HELP") if user
+
     wechat.custom_message_send Wechat::Message.to(openid).text("本工具能为您提供：\n1. 监测日线行情股票走势\n2. 当被关注的股票出现W形态行情时，发送短信、微信通知")
     wechat.custom_message_send Wechat::Message.to(openid).text("订阅成功后，订阅期限将自动延长\n如续期变更套餐的，在新套餐开始前延续现有套餐的关注上限，在新套餐生效后会自动转为新的关注上限")
 
     # request.reply.text "User: #{request[:FromUserName]} click #{key}"
     request.reply.success
+    user.op("click", "HELP") if user
   end
 
   # When user click the menu button
@@ -174,15 +183,17 @@ class WechatsController < ApplicationController
   on :event, with: 'unsubscribe' do |request|
     openid = request[:FromUserName]
     user = User.find_by(openid: openid)
-    user.op("event", "unsubscribe") if user
+
     request.reply.success # user can not receive this message
+    user.op("event", "unsubscribe") if user
   end
 
   # 当无任何 responder 处理用户信息时,使用这个 responder 处理
   on :fallback do |request|
     openid = request[:FromUserName]
     user = User.find_by(openid: openid)
-    user.op("fallback", request[:Content]) if user
+
     request.reply.success # request is XML result hash.
+    user.op("fallback", request[:Content]) if user
   end
 end
