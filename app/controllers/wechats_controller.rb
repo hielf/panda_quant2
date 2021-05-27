@@ -71,7 +71,7 @@ class WechatsController < ApplicationController
       wechat.custom_message_send Wechat::Message.to(openid).text("您当前使用的套餐：#{package_type}\n已订阅数量：#{user_stock_list.count}\n剩余可订阅数量：#{rest_watch_num}")
       wechat.custom_message_send Wechat::Message.to(openid).text("请回复下列序号操作：\n1. 继续订阅\n2. 查询当前订阅列表\n3. 删除订阅")
     else
-      wechat.custom_message_send Wechat::Message.to(openid).text("请选择您的套餐：\n1. 基础套餐(关注上限10个代码)\n2. 高级套餐(关注上限50个代码)")
+      wechat.custom_message_send Wechat::Message.to(openid).text("请先选择您的套餐,限时最低0.01元起")
     end
     # request.reply.text "User: #{request[:FromUserName]} click #{key}"
     request.reply.success
