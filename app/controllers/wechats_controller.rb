@@ -4,13 +4,14 @@ class WechatsController < ApplicationController
 
   on :event, with: 'subscribe' do |request|
     openid = request[:FromUserName]
-    new_user = Wechat.api.user "oEJU4v32gZGQlCMCuUmZMDNgxUHs"
+    new_user = Wechat.api.user openid
     nickname = new_user["nickname"]
     avatar = new_user["headimgurl"]
     user = User.find_or_initialize_by(openid: openid)
     if user.save!
       user.update(nickname: nickname, avatar: avatar)
     end
+    user.op("event", "subscribe") if user
     wechat.custom_message_send Wechat::Message.to(openid).text("欢迎关注本工具:\na)我们为您实时扫描订阅的证券行情\nb)在W形态买入点出现时向您发出通知")
     wechat.custom_message_send Wechat::Message.to(openid).text("更多使用说明请浏览'帮助'")
     request.reply.success
@@ -20,9 +21,11 @@ class WechatsController < ApplicationController
   on :text, with: /^1[3-9]\d{9}$/ do |request|
     openid = request[:FromUserName]
     mobile = request[:Content]
+    user = User.find_by(openid: openid)
     # if content.match(/^1[3-9]\d{9}$/)
     #   true
     # end
+    user.op("text", mobile) if user
     request.message_hash.each do |key, value|
       Rails.logger.warn "#{key}: #{value}"
     end
@@ -42,6 +45,8 @@ class WechatsController < ApplicationController
   on :text, with: /^\d{4}$/ do |request|
     openid = request[:FromUserName]
     verify_code = request[:Content]
+    user = User.find_by(openid: openid)
+    user.op("text", verify_code) if user
 
     request.message_hash.each do |key, value|
       Rails.logger.warn "#{key}: #{value}"
@@ -49,7 +54,6 @@ class WechatsController < ApplicationController
 
     last_sm = Sm.where("message = ? AND message_type = ? AND created_at > ?", verify_code, "verify_code", 5.minutes.ago).last
     if last_sm
-      user = User.find_by(openid: openid)
       user.update(mobile: last_sm.mobile)
       request.reply.text "验证通过，已为您绑定接收通知的手机"
     else
@@ -61,6 +65,7 @@ class WechatsController < ApplicationController
   on :click, with: 'SUBSCRIBE' do |request, key|
     openid = request[:FromUserName]
     user = User.find_by(openid: openid)
+    user.op("click", "SUBSCRIBE") if user
 
     if ApplicationController.helpers.has_subscribe(user)
       subscribtion = user.subscribtions.last
@@ -81,6 +86,7 @@ class WechatsController < ApplicationController
   on :click, with: 'PACKAGE' do |request, key|
     openid = request[:FromUserName]
     user = User.find_by(openid: openid)
+    user.op("click", "PACKAGE") if user
     subscribes = []
     user.subscribtions.each do |s|
       subscribes << [s.package_type, s.start_date, s.end_date, s.watch_num]
@@ -93,9 +99,30 @@ class WechatsController < ApplicationController
     request.reply.success
   end
 
+  # 指令操作
+  on :text, with: /^\d{1}$/ do |request|
+    openid = request[:FromUserName]
+    op = request[:Content]
+    user = User.find_by(openid: openid)
+    user.op("text", command) if user
+
+    last_op_type, last_op_message  = user.last_op
+
+    if last_op_type == "click" && last_op_message == "PACKAGE"
+      wechat.custom_message_send Wechat::Message.to(openid).text("11. 包月套餐\n12. 半年套餐")
+    elsif last_op_type == "click" && last_op_message == "SUBSCRIBE"
+      wechat.custom_message_send Wechat::Message.to(openid).text("21. 包月套餐\n22. 半年套餐")
+    end
+
+    request.reply.success
+    # request.reply.text "已发送短信验证码至手机号码：#{content}/n请在下方的对话栏内回复6位数字验证码"
+  end
+
   #help
   on :click, with: 'HELP' do |request, key|
     openid = request[:FromUserName]
+    user = User.find_by(openid: openid)
+    user.op("click", "HELP") if user
     wechat.custom_message_send Wechat::Message.to(openid).text("本工具能为您提供：\n1. 监测日线行情股票走势\n2. 当被关注的股票出现W形态行情时，发送短信、微信通知")
     wechat.custom_message_send Wechat::Message.to(openid).text("订阅成功后，订阅期限将自动延长\n如续期变更套餐的，在新套餐开始前延续现有套餐的关注上限，在新套餐生效后会自动转为新的关注上限")
 
@@ -141,11 +168,17 @@ class WechatsController < ApplicationController
   end
 
   on :event, with: 'unsubscribe' do |request|
+    openid = request[:FromUserName]
+    user = User.find_by(openid: openid)
+    user.op("event", "unsubscribe") if user
     request.reply.success # user can not receive this message
   end
 
   # 当无任何 responder 处理用户信息时,使用这个 responder 处理
   on :fallback do |request|
+    openid = request[:FromUserName]
+    user = User.find_by(openid: openid)
+    user.op("fallback", request[:Content]) if user
     request.reply.success # request is XML result hash.
   end
 end
