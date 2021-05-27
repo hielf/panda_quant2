@@ -120,7 +120,29 @@ class WechatsController < ApplicationController
     last_op_type, last_op_message  = user.last_op
 
     if last_op_type == "click" && last_op_message == "PACKAGE"
-      wechat.custom_message_send Wechat::Message.to(openid).text("11. 包月套餐\n12. 半年套餐")
+      if op == "1"
+        packages = Package.where(package_type: "基础套餐")
+        reply = ""
+        packages.to_enum.with_index(11).each do |pa, index|
+          reply = reply + "#{"\n" unless reply.empty?}" +
+            "#{index.to_s}. <a href='http://quant.ripple-tech.com/'>【#{pa.title}】</a>" +
+            "-- #{pa.real_price.to_s} 元" +
+            "\n(#{pa.desc})"
+        end
+        wechat.custom_message_send Wechat::Message.to(openid).text(reply)
+
+      elsif op == "2"
+        packages = Package.where(package_type: "高级套餐")
+        reply = ""
+        packages.to_enum.with_index(21).each do |pa, index|
+          reply = reply + "#{"\n" unless reply.empty?}" +
+            "#{index.to_s}. <a href='http://quant.ripple-tech.com/'>【#{pa.title}】</a>" +
+            "-- #{pa.real_price.to_s} 元" +
+            "\n(#{pa.desc})"
+        end
+        wechat.custom_message_send Wechat::Message.to(openid).text(reply)
+      end
+
     elsif last_op_type == "click" && last_op_message == "SUBSCRIBE"
       wechat.custom_message_send Wechat::Message.to(openid).text("21. 包月套餐\n22. 半年套餐")
     end
