@@ -163,7 +163,7 @@ class WechatsController < ApplicationController
           if !stock_lists.empty?
             wechat.custom_message_send Wechat::Message.to(openid).text("您当前订阅的股票代码：#{stock_lists.map{|s| '\n' + s[0].to_s + ' - ' + s[1].to_s + '\n'}}")
           else
-            wechat.custom_message_send Wechat::Message.to(openid).text("您还没关注任何股票，请输入6代码订阅")
+            wechat.custom_message_send Wechat::Message.to(openid).text("您还没关注任何股票，请输入6位代码订阅")
           end
         elsif op == "3" #“删除”
           wechat.custom_message_send Wechat::Message.to(openid).text("回复6位股票代码删除")
@@ -203,7 +203,7 @@ class WechatsController < ApplicationController
     last_op_type, last_op_message  = user.last_op
 
     if stock && subscribtion && available_num > 0
-      if last_op_type == "text" && last_op_message == "1"
+      if last_op_type == "text" && (last_op_message == "1" || last_op_message == "2")
         user.subscribe!(stock)
         wechat.custom_message_send Wechat::Message.to(openid).text("已订阅：#{stock.stock_code} - #{stock.stock_display_name}\n剩余可订阅数量：#{(available_num - 1).to_s}")
       elsif last_op_type == "text" && last_op_message == "3"
