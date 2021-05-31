@@ -12,7 +12,7 @@ class WechatsController < ApplicationController
       user.update(nickname: nickname, avatar: avatar)
     end
     wechat.custom_message_send Wechat::Message.to(openid).text("欢迎关注本工具:\na)我们为您实时扫描订阅的证券行情\nb)在W形态买入点出现时向您发出通知")
-    wechat.custom_message_send Wechat::Message.to(openid).text("更多使用说明请浏览'帮助'")
+    wechat.custom_message_send Wechat::Message.to(openid).text("更多使用说明请浏览【帮助】")
 
     request.reply.success
     user.op("event", "subscribe") if user
@@ -80,7 +80,7 @@ class WechatsController < ApplicationController
       wechat.custom_message_send Wechat::Message.to(openid).text("您当前使用的套餐：#{package_type}\n已订阅数量：#{user_stock_list.count}\n剩余可订阅数量：#{rest_watch_num}")
       wechat.custom_message_send Wechat::Message.to(openid).text("请回复下列序号操作：\n1. 继续订阅\n2. 查询当前订阅列表\n3. 删除订阅")
     else
-      wechat.custom_message_send Wechat::Message.to(openid).text("请先选择您的套餐,限时最低0.01元起")
+      wechat.custom_message_send Wechat::Message.to(openid).text("请先选择您的【套餐】,限时最低0.01元起")
     end
     # request.reply.text "User: #{request[:FromUserName]} click #{key}"
 
@@ -173,9 +173,51 @@ class WechatsController < ApplicationController
         end
 
       else
-        wechat.custom_message_send Wechat::Message.to(openid).text("请先选择您的套餐,限时最低0.01元起")
+        wechat.custom_message_send Wechat::Message.to(openid).text("请先选择您的【套餐】,限时最低0.01元起")
       end
 
+    else
+      wechat.custom_message_send Wechat::Message.to(openid).text("您回复的指令有误，请重新输入")
+      flag = false
+    end
+
+    request.reply.success
+    # request.reply.text "已发送短信验证码至手机号码：#{content}/n请在下方的对话栏内回复6位数字验证码"
+    user.op("text", op) if user && flag
+  end
+
+  # 股票代码
+  on :text, with: /^\d{6}$/ do |request|
+    openid = request[:FromUserName]
+    op = request[:Content]
+    user = User.find_by(openid: openid)
+    flag = true
+    stock = StockList.find_by(stock_code: op)
+    subscribtion = user.current_subscribtion
+    available_num = subscribtion.watch_num - user.stock_lists.count
+
+    request.message_hash.each do |key, value|
+      Rails.logger.warn "#{key}: #{value}"
+    end
+
+    last_op_type, last_op_message  = user.last_op
+
+    if stock && subscribtion && available_num > 0
+      if last_op_type == "text" && last_op_message == "1"
+        user.subscribe!(stock)
+        wechat.custom_message_send Wechat::Message.to(openid).text("已订阅：#{stock.stock_code} - #{stock.stock_display_name}\n剩余可订阅数量：#{(available_num - 1).to_s}")
+      elsif last_op_type == "text" && last_op_message == "3"
+        user.unsubscribe!(stock)
+        wechat.custom_message_send Wechat::Message.to(openid).text("已删除：#{stock.stock_code} - #{stock.stock_display_name}\n剩余可订阅数量：#{(available_num + 1).to_s}")
+      end
+
+    elsif stock.nil?
+      wechat.custom_message_send Wechat::Message.to(openid).text("对不起，您输入的股票代码可能有误，请重新输入或联系客服")
+    elsif available_num == 0
+      wechat.custom_message_send Wechat::Message.to(openid).text("对不起，您的订阅数量已达到当前套餐上限")
+    else
+      wechat.custom_message_send Wechat::Message.to(openid).text("您回复的指令有误，请重新输入")
+      flag = false
     end
 
     request.reply.success
@@ -188,7 +230,7 @@ class WechatsController < ApplicationController
     openid = request[:FromUserName]
     user = User.find_by(openid: openid)
 
-    wechat.custom_message_send Wechat::Message.to(openid).text("本工具提供：\n1. 监测日线行情股票走势\n2. 当被关注的股票出现W形态行情时，发送短信、微信通知")
+    wechat.custom_message_send Wechat::Message.to(openid).text("本工具提供：\n1. 监测日线行情股票走势\n2. 当被关注的股票出现<a href='https://zhuanlan.zhihu.com/p/101289251'>W形态行情</a>时，发送短信、微信通知")
     wechat.custom_message_send Wechat::Message.to(openid).text("订阅成功后，订阅期限将自动延长\n如续期变更套餐的，在新套餐开始前延续现有套餐的关注上限，在新套餐生效后会自动转为新的关注上限")
 
     # request.reply.text "User: #{request[:FromUserName]} click #{key}"
@@ -246,6 +288,7 @@ class WechatsController < ApplicationController
     openid = request[:FromUserName]
     user = User.find_by(openid: openid)
 
+    wechat.custom_message_send Wechat::Message.to(openid).text("请选择菜单下的功能进行操作")
     request.reply.success # request is XML result hash.
     user.op("fallback", request[:Content]) if user
   end

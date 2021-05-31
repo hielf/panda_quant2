@@ -12,16 +12,29 @@ class User < ApplicationRecord
   # validates :generate_username_prefix, presence: true, on: :create
 
   def op(type, message)
-    log = self.op_logs.new(op_type: type, op_message: message, op_time: Time.now)
+    log = op_logs.new(op_type: type, op_message: message, op_time: Time.now)
     log.save!
   end
 
   def last_op
-    log = self.op_logs.last
+    log = op_logs.last
     return log.op_type, log.op_message
   end
 
   def current_subscribtion
-    self.subscribtions.find_by("start_date <= ? AND end_date >= ?", Date.today, Date.today)
+    subscribtions.find_by("start_date <= ? AND end_date >= ?", Date.today, Date.today)
   end
+
+  def subscribing?(stock_list)
+    user_stock_list_rels.find_by(stock_list_id: stock_list.id)
+  end
+
+  def subscribe!(stock_list)
+    user_stock_list_rels.create!(stock_list_id: stock_list.id)
+  end
+
+  def unsubscribe!(stock_list)
+    user_stock_list_rels.where(stock_list_id: stock_list.id).delete_all
+  end
+
 end

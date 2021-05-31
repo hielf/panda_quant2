@@ -54,7 +54,7 @@ class Api::OrdersController < Api::ApplicationController
           package = order.package
           start_date = user.subscribtions.maximum(:end_date).nil? ? Date.today : user.subscribtions.maximum(:end_date)
           end_date = start_date + package.date_num
-          user.subscribtions.create!(start_date: start_date, end_date: end_date, package_type: package.package_type, watch_num: package.watch_num)
+          user.subscribtions.create!(start_date: start_date, end_date: end_date, package_type: package.package_type, watch_num: package.watch_num, note:package.desc)
         end
       end
       render :xml => {return_code: "SUCCESS"}.to_xml(root: 'xml', dasherize: false)
