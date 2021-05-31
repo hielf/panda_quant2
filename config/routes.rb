@@ -1,11 +1,7 @@
 Rails.application.routes.draw do
-
-  get 'hello_world', to: 'hello_world#index'
   root 'home#index'
   resource :wechat, only: [:show, :create]
   resources :users
-  post 'attention', to: 'api/recommends#attention'
-  get 'random_bars', to: 'api/recommends#random_bars'
   namespace :api, defaults: {format: :json} do
     root 'root#home'
     post 'accounts/sign_in', to: 'accounts#sign_in'

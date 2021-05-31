@@ -72,7 +72,7 @@ class WechatsController < ApplicationController
     user = User.find_by(openid: openid)
 
     if ApplicationController.helpers.has_subscribe(user)
-      subscribtion = user.subscribtions.last
+      subscribtion = user.current_subscribtion
       package_type = subscribtion.nil? ? "未订阅" : subscribtion.package_type
       # package = Package.find_by(package_type: subscribtion.package_type)
       user_stock_list = user.stock_lists
@@ -112,6 +112,7 @@ class WechatsController < ApplicationController
     openid = request[:FromUserName]
     op = request[:Content]
     user = User.find_by(openid: openid)
+    flag = true
 
     request.message_hash.each do |key, value|
       Rails.logger.warn "#{key}: #{value}"
@@ -126,7 +127,7 @@ class WechatsController < ApplicationController
         packages.to_enum.with_index(11).each do |pa, index|
           reply = reply + "#{"\n" unless reply.empty?}" +
             "#{index.to_s}. <a href='http://quant.ripple-tech.com/'>【#{pa.title}】</a>" +
-            "-- #{pa.real_price.to_s} 元" +
+            "-- #{pa.real_price > 1 ? pa.real_price.to_i.to_s : pa.real_price.to_s} 元" +
             "\n(#{pa.desc})"
         end
         wechat.custom_message_send Wechat::Message.to(openid).text(reply)
@@ -137,19 +138,49 @@ class WechatsController < ApplicationController
         packages.to_enum.with_index(21).each do |pa, index|
           reply = reply + "#{"\n" unless reply.empty?}" +
             "#{index.to_s}. <a href='http://quant.ripple-tech.com/'>【#{pa.title}】</a>" +
-            "-- #{pa.real_price.to_s} 元" +
+            "-- #{pa.real_price > 1 ? pa.real_price.to_i.to_s : pa.real_price.to_s} 元" +
             "\n(#{pa.desc})"
         end
         wechat.custom_message_send Wechat::Message.to(openid).text(reply)
+
+      else
+        wechat.custom_message_send Wechat::Message.to(openid).text("您回复的指令有误，请重新输入")
+        flag = false
       end
 
     elsif last_op_type == "click" && last_op_message == "SUBSCRIBE"
-      wechat.custom_message_send Wechat::Message.to(openid).text("21. 包月套餐\n22. 半年套餐")
+      subscribtion = user.current_subscribtion
+      if subscribtion
+        if op == "1" #订阅
+          current_watch = user.stock_lists.count
+          watch_num = subscribtion.watch_num
+          wechat.custom_message_send Wechat::Message.to(openid).text("当前订阅数：#{current_watch.to_s}/#{watch_num.to_s}\n请输入6位股票代码")
+        elsif op == "2" #查看
+          stock_lists = []
+          user.stock_lists.each do |s|
+            stock_lists << [s.stock_code, s.stock_display_name]
+          end
+          if !stock_lists.empty?
+            wechat.custom_message_send Wechat::Message.to(openid).text("您当前订阅的股票代码：#{stock_lists.map{|s| '\n' + s[0].to_s + ' - ' + s[1].to_s + '\n'}}")
+          else
+            wechat.custom_message_send Wechat::Message.to(openid).text("您还没关注任何股票，请输入6代码订阅")
+          end
+        elsif op == "3" #“删除”
+          wechat.custom_message_send Wechat::Message.to(openid).text("回复6位股票代码删除")
+        else
+          wechat.custom_message_send Wechat::Message.to(openid).text("您回复的指令有误，请重新输入")
+          flag = false
+        end
+
+      else
+        wechat.custom_message_send Wechat::Message.to(openid).text("请先选择您的套餐,限时最低0.01元起")
+      end
+
     end
 
     request.reply.success
     # request.reply.text "已发送短信验证码至手机号码：#{content}/n请在下方的对话栏内回复6位数字验证码"
-    user.op("text", op) if user
+    user.op("text", op) if user && flag
   end
 
   #help
@@ -157,7 +188,7 @@ class WechatsController < ApplicationController
     openid = request[:FromUserName]
     user = User.find_by(openid: openid)
 
-    wechat.custom_message_send Wechat::Message.to(openid).text("本工具能为您提供：\n1. 监测日线行情股票走势\n2. 当被关注的股票出现W形态行情时，发送短信、微信通知")
+    wechat.custom_message_send Wechat::Message.to(openid).text("本工具提供：\n1. 监测日线行情股票走势\n2. 当被关注的股票出现W形态行情时，发送短信、微信通知")
     wechat.custom_message_send Wechat::Message.to(openid).text("订阅成功后，订阅期限将自动延长\n如续期变更套餐的，在新套餐开始前延续现有套餐的关注上限，在新套餐生效后会自动转为新的关注上限")
 
     # request.reply.text "User: #{request[:FromUserName]} click #{key}"

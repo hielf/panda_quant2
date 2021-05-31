@@ -20,4 +20,8 @@ class User < ApplicationRecord
     log = self.op_logs.last
     return log.op_type, log.op_message
   end
+
+  def current_subscribtion
+    self.subscribtions.find_by("start_date <= ? AND end_date >= ?", Date.today, Date.today)
+  end
 end
