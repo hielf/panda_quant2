@@ -307,6 +307,8 @@ GEM
     unf (0.1.4)
       unf_ext
     unf_ext (0.0.7.7)
+    validates_lengths_from_database (0.8.0)
+      activerecord (>= 4)
     web-console (4.1.0)
       actionview (>= 6.0.0)
       activemodel (>= 6.0.0)
@@ -376,6 +378,7 @@ DEPENDENCIES
   timeout-extensions
   turbolinks (~> 5.2)
   tzinfo-data
+  validates_lengths_from_database
   web-console (>= 3.3.0)
   webpacker (~> 5.3)
   wechat

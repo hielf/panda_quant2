@@ -1,4 +1,5 @@
 class Order < ApplicationRecord
+  validates_lengths_from_database
   belongs_to :user
   belongs_to :package
 

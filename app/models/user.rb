@@ -1,5 +1,6 @@
 class User < ApplicationRecord
   include AccountConcern
+  validates_lengths_from_database
   # has_secure_password
   has_many :subscribtions, dependent: :destroy
   has_many :orders, dependent: :destroy
