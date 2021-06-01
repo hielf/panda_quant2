@@ -157,7 +157,7 @@ class WechatsController < ApplicationController
         stock_lists.to_enum.with_index(1).each do |sl, index|
           url = "https://wzq.tenpay.com/mp/v2/index.html?stat=#/trade/stock_detail.shtml?scode=#{sl.stock_code}&type=1&holder=&frombroker=&remindtype=choose"
           reply = reply + "#{"\n" unless reply.empty?}" +
-            "#{index.to_s}.#{sl.stock_display_name}(<a href='#{url}'>#{sl.stock_code}</a>)"
+            "#{index.to_s}. #{sl.stock_display_name}(<a href='#{url}'>#{sl.stock_code}</a>)"
         end
       end
       wechat.custom_message_send Wechat::Message.to(openid).text(reply)
@@ -195,8 +195,12 @@ class WechatsController < ApplicationController
         user.subscribe!(stock)
         wechat.custom_message_send Wechat::Message.to(openid).text("已订阅：#{stock.stock_display_name}(#{stock.stock_code})\n剩余可订阅数量：#{(available_num - 1).to_s}")
       elsif last_op_type == "text" && last_op_message == "5"
-        user.unsubscribe!(stock)
-        wechat.custom_message_send Wechat::Message.to(openid).text("已删除：#{stock.stock_display_name}(#{stock.stock_code})\n剩余可订阅数量：#{(available_num + 1).to_s}")
+        if user.subscribing?(stock)
+          user.unsubscribe!(stock)
+          wechat.custom_message_send Wechat::Message.to(openid).text("已删除：#{stock.stock_display_name}(#{stock.stock_code})\n剩余可订阅数量：#{(available_num + 1).to_s}")
+        else
+          wechat.custom_message_send Wechat::Message.to(openid).text("您未订阅该股票，请检查输入的代码是否正确")
+        end
       end
 
     elsif stock.nil?
