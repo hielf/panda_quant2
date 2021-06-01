@@ -147,16 +147,21 @@ class WechatsController < ApplicationController
       current_watch = user.stock_lists.count
       watch_num = subscribtion.watch_num
       wechat.custom_message_send Wechat::Message.to(openid).text("当前订阅数：#{current_watch.to_s}/#{watch_num.to_s}\n请输入6位股票代码")
+
     elsif op == "4" #查看
-      stock_lists = []
-      user.stock_lists.each do |s|
-        stock_lists << [s.stock_code, s.stock_display_name]
-      end
-      if !stock_lists.empty?
-        wechat.custom_message_send Wechat::Message.to(openid).text("您当前订阅的股票代码：#{stock_lists.map{|s| '\n' + s[0].to_s + ' - ' + s[1].to_s + '\n'}}")
+      stock_lists = user.stock_lists
+      if stock_lists.empty?
+        reply = "您还没关注任何股票，请输入6位代码订阅"
       else
-        wechat.custom_message_send Wechat::Message.to(openid).text("您还没关注任何股票，请输入6位代码订阅")
+        reply = "您当前订阅的股票代码："
+        stock_lists.to_enum.with_index(1).each do |sl, index|
+          url = "https://wzq.tenpay.com/mp/v2/index.html?stat=#/trade/stock_detail.shtml?scode=#{sl.stock_code}&type=1&holder=&frombroker=&remindtype=choose"
+          reply = reply + "#{"\n" unless reply.empty?}" +
+            "#{index.to_s}.<a href=#{url}>#{stock.stock_display_name}(#{stock.stock_code})</a>"
+        end
       end
+      wechat.custom_message_send Wechat::Message.to(openid).text(reply)
+
     elsif op == "5" #“删除”
       wechat.custom_message_send Wechat::Message.to(openid).text("回复6位股票代码删除")
     else
