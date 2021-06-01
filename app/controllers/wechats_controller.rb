@@ -78,7 +78,7 @@ class WechatsController < ApplicationController
       user_stock_list = user.stock_lists
       rest_watch_num = subscribtion.nil? ? 0 : (subscribtion.watch_num - user_stock_list.count)
       wechat.custom_message_send Wechat::Message.to(openid).text("您当前使用的套餐：#{package_type}\n已订阅数量：#{user_stock_list.count}\n剩余可订阅数量：#{rest_watch_num}")
-      wechat.custom_message_send Wechat::Message.to(openid).text("请回复下列序号操作：\n1. 继续订阅\n2. 查询当前订阅列表\n3. 删除订阅")
+      wechat.custom_message_send Wechat::Message.to(openid).text("请回复下列序号操作：\n3. 继续订阅\n4. 查询当前订阅列表\n5. 删除订阅")
     else
       wechat.custom_message_send Wechat::Message.to(openid).text("请先选择您的【套餐】,限时最低0.01元起")
     end
@@ -112,6 +112,7 @@ class WechatsController < ApplicationController
     openid = request[:FromUserName]
     op = request[:Content]
     user = User.find_by(openid: openid)
+    subscribtion = user.current_subscribtion
     flag = true
 
     request.message_hash.each do |key, value|
@@ -120,62 +121,44 @@ class WechatsController < ApplicationController
 
     last_op_type, last_op_message  = user.last_op
 
-    if last_op_type == "click" && last_op_message == "PACKAGE"
-      if op == "1"
-        packages = Package.where(package_type: "基础套餐")
-        reply = ""
-        packages.to_enum.with_index(11).each do |pa, index|
-          reply = reply + "#{"\n" unless reply.empty?}" +
-            "#{index.to_s}. <a href='http://quant.ripple-tech.com/'>【#{pa.title}】</a>" +
-            "-- #{pa.real_price > 1 ? pa.real_price.to_i.to_s : pa.real_price.to_s} 元" +
-            "\n(#{pa.desc})"
-        end
-        wechat.custom_message_send Wechat::Message.to(openid).text(reply)
-
-      elsif op == "2"
-        packages = Package.where(package_type: "高级套餐")
-        reply = ""
-        packages.to_enum.with_index(21).each do |pa, index|
-          reply = reply + "#{"\n" unless reply.empty?}" +
-            "#{index.to_s}. <a href='http://quant.ripple-tech.com/'>【#{pa.title}】</a>" +
-            "-- #{pa.real_price > 1 ? pa.real_price.to_i.to_s : pa.real_price.to_s} 元" +
-            "\n(#{pa.desc})"
-        end
-        wechat.custom_message_send Wechat::Message.to(openid).text(reply)
-
-      else
-        wechat.custom_message_send Wechat::Message.to(openid).text("您回复的指令有误，请重新输入")
-        flag = false
+    if op == "1"
+      packages = Package.where(package_type: "基础套餐")
+      reply = ""
+      packages.to_enum.with_index(11).each do |pa, index|
+        reply = reply + "#{"\n" unless reply.empty?}" +
+          "#{index.to_s}. <a href='http://quant.ripple-tech.com/'>【#{pa.title}】</a>" +
+          "-- #{pa.real_price > 1 ? pa.real_price.to_i.to_s : pa.real_price.to_s} 元" +
+          "\n(#{pa.desc})"
       end
+      wechat.custom_message_send Wechat::Message.to(openid).text(reply)
 
-    elsif last_op_type == "click" && last_op_message == "SUBSCRIBE"
-      subscribtion = user.current_subscribtion
-      if subscribtion
-        if op == "1" #订阅
-          current_watch = user.stock_lists.count
-          watch_num = subscribtion.watch_num
-          wechat.custom_message_send Wechat::Message.to(openid).text("当前订阅数：#{current_watch.to_s}/#{watch_num.to_s}\n请输入6位股票代码")
-        elsif op == "2" #查看
-          stock_lists = []
-          user.stock_lists.each do |s|
-            stock_lists << [s.stock_code, s.stock_display_name]
-          end
-          if !stock_lists.empty?
-            wechat.custom_message_send Wechat::Message.to(openid).text("您当前订阅的股票代码：#{stock_lists.map{|s| '\n' + s[0].to_s + ' - ' + s[1].to_s + '\n'}}")
-          else
-            wechat.custom_message_send Wechat::Message.to(openid).text("您还没关注任何股票，请输入6位代码订阅")
-          end
-        elsif op == "3" #“删除”
-          wechat.custom_message_send Wechat::Message.to(openid).text("回复6位股票代码删除")
-        else
-          wechat.custom_message_send Wechat::Message.to(openid).text("您回复的指令有误，请重新输入")
-          flag = false
-        end
-
-      else
-        wechat.custom_message_send Wechat::Message.to(openid).text("请先选择您的【套餐】,限时最低0.01元起")
+    elsif op == "2"
+      packages = Package.where(package_type: "高级套餐")
+      reply = ""
+      packages.to_enum.with_index(21).each do |pa, index|
+        reply = reply + "#{"\n" unless reply.empty?}" +
+          "#{index.to_s}. <a href='http://quant.ripple-tech.com/'>【#{pa.title}】</a>" +
+          "-- #{pa.real_price > 1 ? pa.real_price.to_i.to_s : pa.real_price.to_s} 元" +
+          "\n(#{pa.desc})"
       end
+      wechat.custom_message_send Wechat::Message.to(openid).text(reply)
 
+    elsif op == "3" && subscribtion #订阅
+      current_watch = user.stock_lists.count
+      watch_num = subscribtion.watch_num
+      wechat.custom_message_send Wechat::Message.to(openid).text("当前订阅数：#{current_watch.to_s}/#{watch_num.to_s}\n请输入6位股票代码")
+    elsif op == "4" #查看
+      stock_lists = []
+      user.stock_lists.each do |s|
+        stock_lists << [s.stock_code, s.stock_display_name]
+      end
+      if !stock_lists.empty?
+        wechat.custom_message_send Wechat::Message.to(openid).text("您当前订阅的股票代码：#{stock_lists.map{|s| '\n' + s[0].to_s + ' - ' + s[1].to_s + '\n'}}")
+      else
+        wechat.custom_message_send Wechat::Message.to(openid).text("您还没关注任何股票，请输入6位代码订阅")
+      end
+    elsif op == "5" #“删除”
+      wechat.custom_message_send Wechat::Message.to(openid).text("回复6位股票代码删除")
     else
       wechat.custom_message_send Wechat::Message.to(openid).text("您回复的指令有误，请重新输入")
       flag = false
@@ -203,10 +186,10 @@ class WechatsController < ApplicationController
     last_op_type, last_op_message  = user.last_op
 
     if stock && subscribtion && available_num > 0
-      if last_op_type == "text" && (last_op_message == "1" || last_op_message == "2")
+      if last_op_type == "text" && (last_op_message == "3" || last_op_message == "4")
         user.subscribe!(stock)
         wechat.custom_message_send Wechat::Message.to(openid).text("已订阅：#{stock.stock_display_name}(#{stock.stock_code})\n剩余可订阅数量：#{(available_num - 1).to_s}")
-      elsif last_op_type == "text" && last_op_message == "3"
+      elsif last_op_type == "text" && last_op_message == "5"
         user.unsubscribe!(stock)
         wechat.custom_message_send Wechat::Message.to(openid).text("已删除：#{stock.stock_display_name}(#{stock.stock_code})\n剩余可订阅数量：#{(available_num + 1).to_s}")
       end
