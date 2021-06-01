@@ -4,7 +4,7 @@ module StockListsHelper
 
   def get_all_stock_list
     pyimport 'easyquotation'
-    quotation = easyquotation.use('sina')
+    quotation = easyquotation.use('tencent')
     h = quotation.market_snapshot(prefix='True')
     h.each do |stock|
       begin

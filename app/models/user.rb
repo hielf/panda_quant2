@@ -30,7 +30,8 @@ class User < ApplicationRecord
   end
 
   def subscribe!(stock_list)
-    user_stock_list_rels.create!(stock_list_id: stock_list.id)
+    s = user_stock_list_rels.find_or_initialize_by(stock_list_id: stock_list.id)
+    s.save!
   end
 
   def unsubscribe!(stock_list)

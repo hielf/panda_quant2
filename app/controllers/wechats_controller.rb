@@ -191,7 +191,7 @@ class WechatsController < ApplicationController
     openid = request[:FromUserName]
     op = request[:Content]
     user = User.find_by(openid: openid)
-    flag = true
+    flag = false
     stock = StockList.find_by(stock_code: op)
     subscribtion = user.current_subscribtion
     available_num = subscribtion.watch_num - user.stock_lists.count
@@ -205,10 +205,10 @@ class WechatsController < ApplicationController
     if stock && subscribtion && available_num > 0
       if last_op_type == "text" && (last_op_message == "1" || last_op_message == "2")
         user.subscribe!(stock)
-        wechat.custom_message_send Wechat::Message.to(openid).text("已订阅：#{stock.stock_code} - #{stock.stock_display_name}\n剩余可订阅数量：#{(available_num - 1).to_s}")
+        wechat.custom_message_send Wechat::Message.to(openid).text("已订阅：#{stock.stock_display_name}(#{stock.stock_code})\n剩余可订阅数量：#{(available_num - 1).to_s}")
       elsif last_op_type == "text" && last_op_message == "3"
         user.unsubscribe!(stock)
-        wechat.custom_message_send Wechat::Message.to(openid).text("已删除：#{stock.stock_code} - #{stock.stock_display_name}\n剩余可订阅数量：#{(available_num + 1).to_s}")
+        wechat.custom_message_send Wechat::Message.to(openid).text("已删除：#{stock.stock_display_name}(#{stock.stock_code})\n剩余可订阅数量：#{(available_num + 1).to_s}")
       end
 
     elsif stock.nil?
@@ -217,7 +217,6 @@ class WechatsController < ApplicationController
       wechat.custom_message_send Wechat::Message.to(openid).text("对不起，您的订阅数量已达到当前套餐上限")
     else
       wechat.custom_message_send Wechat::Message.to(openid).text("您回复的指令有误，请重新输入")
-      flag = false
     end
 
     request.reply.success
