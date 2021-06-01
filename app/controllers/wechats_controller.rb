@@ -157,7 +157,7 @@ class WechatsController < ApplicationController
         stock_lists.to_enum.with_index(1).each do |sl, index|
           url = "https://wzq.tenpay.com/mp/v2/index.html?stat=#/trade/stock_detail.shtml?scode=#{sl.stock_code}&type=1&holder=&frombroker=&remindtype=choose"
           reply = reply + "#{"\n" unless reply.empty?}" +
-            "#{index.to_s}.<a href='#{url}'>#{sl.stock_display_name}(#{sl.stock_code})</a>"
+            "#{index.to_s}.#{sl.stock_display_name}(<a href='#{url}'>#{sl.stock_code}</a>)"
         end
       end
       wechat.custom_message_send Wechat::Message.to(openid).text(reply)
