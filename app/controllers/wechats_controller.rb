@@ -93,13 +93,17 @@ class WechatsController < ApplicationController
     openid = request[:FromUserName]
     user = User.find_by(openid: openid)
 
-    subscribes = []
-    user.subscribtions.each do |s|
-      subscribes << [s.package_type, s.start_date, s.end_date, s.watch_num]
+    packages = user.subscribtions
+    reply = "您当前的套餐："
+    packages.to_enum.with_index(1).each do |pa, index|
+      reply = reply + "#{"\n" unless reply.empty?}" +
+        "#{index.to_s}. 【#{pa.package_type}】" +
+        "\n有效期： #{pa.start_date} - #{pa.end_date}" +
+        "\n限额： #{pa.watch_num}"
     end
 
     wechat.custom_message_send Wechat::Message.to(openid).text("新用户请直接选择需要的套餐\n老用户可以在已有订阅的基础上叠加新套餐\n详细说明请查看【帮助】")
-    wechat.custom_message_send Wechat::Message.to(openid).text("您当前的套餐：#{subscribes.map{|s| '\n' + s[0] + ': ' + s[1].to_s + ' - ' + s[2].to_s + '\n'}}") if !subscribes.empty?
+    wechat.custom_message_send Wechat::Message.to(openid).text("#{reply}") if !packages.empty?
     wechat.custom_message_send Wechat::Message.to(openid).text("请选择您的套餐：\n1. 基础套餐(关注上限10个代码)\n2. 高级套餐(关注上限50个代码)")
     # request.reply.text "User: #{request[:FromUserName]} click #{key}"
 
@@ -158,7 +162,7 @@ class WechatsController < ApplicationController
           url = "https://wzq.tenpay.com/mp/v2/index.html?stat=#/trade/stock_detail.shtml?scode=#{sl.stock_code}&type=1&holder=&frombroker=&remindtype=choose"
           reply = reply + "#{"\n" unless reply.empty?}" +
             "#{index.to_s}.".ljust(4, ' ') +
-            "#{sl.stock_display_name.ljust(5, ' ')}(<a href='#{url}'>" +
+            "#{sl.stock_display_name.ljust(6, ' ')}(<a href='#{url}'>" +
             "#{sl.stock_code}</a>)"
         end
       end
