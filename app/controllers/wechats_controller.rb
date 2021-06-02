@@ -97,9 +97,8 @@ class WechatsController < ApplicationController
     reply = "您当前的套餐："
     packages.to_enum.with_index(1).each do |pa, index|
       reply = reply + "#{"\n" unless reply.empty?}" +
-        "#{index.to_s}. 【#{pa.package_type}】" +
-        "\n有效期： #{pa.start_date} - #{pa.end_date}" +
-        "\n限额： #{pa.watch_num}"
+        "#{index.to_s}. 【#{pa.package_type}】 关注上限： #{pa.watch_num}" +
+        "\n有效期： #{pa.start_date} 至 #{pa.end_date}"
     end
 
     wechat.custom_message_send Wechat::Message.to(openid).text("新用户请直接选择需要的套餐\n老用户可以在已有订阅的基础上叠加新套餐\n详细说明请查看【帮助】")
