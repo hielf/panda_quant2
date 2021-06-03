@@ -1,5 +1,6 @@
 Rails.application.routes.draw do
   root 'home#index'
+  get 'hello_world', to: 'hello_world#index'
   resource :wechat, only: [:show, :create]
   resources :users
   namespace :api, defaults: {format: :json} do
