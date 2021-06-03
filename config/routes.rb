@@ -34,13 +34,7 @@ Rails.application.routes.draw do
         get :user_history
       end
     end
-    # resources :trade_orders do
-    #   collection do
-    #     post :order
-    #   end
-    # end
-    match '*path', via: :all, to: 'root#route_not_found'
+    # match '*path', to: 'root#route_not_found', via: :all
   end
-  match '*path', via: :all, to: 'home#route_not_found'
-
+  get '*path', to: 'home#index', via: :all
 end
