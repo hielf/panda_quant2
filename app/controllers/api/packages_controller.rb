@@ -1,5 +1,5 @@
 class Api::PackagesController < Api::ApplicationController
-  skip_before_action :authenticate_user!, only: [:index]
+  skip_before_action :authenticate_user!, only: [:index, :show]
 
   def create
     m_requires! [:title, :period, :market_price, :discount, :real_price, :package_type, :desc]
@@ -21,6 +21,11 @@ class Api::PackagesController < Api::ApplicationController
     optional! :per, default: 20, values: 1..100
     @q = Package.ransack()
     @packages = @q.result.order(period: :desc)
+  end
+
+  def show
+    m_requires! [:id]
+    @package = Package.find_by(id: params[:id])
   end
 
   def subscribe

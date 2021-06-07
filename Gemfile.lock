@@ -297,9 +297,6 @@ GEM
       state_machines-activemodel (>= 0.8.0)
     thor (1.1.0)
     timeout-extensions (0.1.1)
-    turbolinks (5.2.1)
-      turbolinks-source (~> 5.2)
-    turbolinks-source (5.2.0)
     tzinfo (2.0.4)
       concurrent-ruby (~> 1.0)
     tzinfo-data (1.2021.1)
@@ -376,7 +373,6 @@ DEPENDENCIES
   spring-watcher-listen (~> 2.0.0)
   state_machines-activerecord
   timeout-extensions
-  turbolinks (~> 5.2)
   tzinfo-data
   validates_lengths_from_database
   web-console (>= 3.3.0)
