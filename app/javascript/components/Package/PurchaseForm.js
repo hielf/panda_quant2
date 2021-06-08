@@ -1,34 +1,38 @@
-import React from 'react'
+import React, {Fragment} from 'react'
 import axios from 'axios'
 import styled from 'styled-components'
 
 const Wrapper = styled.div`
-  margin-left: auto;
-  margin-right: auto;
-  display: grid;
-  grid-template-columns: repeat(2, 1fr);
-`
-
-const Column = styled.div`
   background: #fff;
+  padding: 20px;
   height: 100vh;
-  overflow: scroll;
-
-  &:last-child {
-    background: #000;
-  }
+  padding-top: 100px;
 `
 
-const Main = styled.div`
-  padding-left: 50px;
+const SubmitBtn = styled.button`
+  color: #fff;
+  background: #333;
+  padding: 12px;
+  font-size: 18px;
+  cursor: pointer;
+  transition: ease-in-out 0.1s;
+  border: 1px solid #fff;
+  width: 100%;
+  margin-top: 20px;
+
+  &:hover {
+    background: #fff;
+    color: #333;
+    border: 1px solid #fff;
+  }
 `
 
 const PurchaseForm = (props) => {
 
   return (
     <div className="wrapper">
-      <form>
-        <div>购买</div>
+      <form onSubmit={props.handleSubmit}>
+        <SubmitBtn type="submit">购买</SubmitBtn>
       </form>
     </div>
   )

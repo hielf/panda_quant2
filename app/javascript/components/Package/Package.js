@@ -42,6 +42,23 @@ const Package = (props) => {
     .catch( resp => console.log(resp) )
   }, [])
 
+  const handleChange = (e) => {
+    e.preventDefault()
+  }
+
+  const handleSubmit = (e) => {
+    e.preventDefault()
+
+    const csrfToken = document.querySelector('[name=csrf-token]').content
+    axios.defaults.headers.common['X-CSRF-TOKEN'] = csrfToken
+    const package_id = props.match.params.id
+    axios.post('/api/packages/subscribe', {package_id})
+    .then(resp => {
+      debugger
+    })
+    .catch(resp => {})
+  }
+
   return (
     <Wrapper>
       {
@@ -56,7 +73,11 @@ const Package = (props) => {
             </Main>
           </Column>
           <Column>
-            <PurchaseForm/>
+            <PurchaseForm
+              handleChange={handleChange}
+              handleSubmit={handleSubmit}
+              attributes={packagee.data.package}
+            />
           </Column>
         </Fragment>
       }
