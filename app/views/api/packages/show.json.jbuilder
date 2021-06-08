@@ -11,5 +11,6 @@ json.data do
     json.real_price @package.real_price.to_i
     json.package_type @package.package_type
     json.desc @package.desc
+    json.watch_num @package.watch_num
   end
 end

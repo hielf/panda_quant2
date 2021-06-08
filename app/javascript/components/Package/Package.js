@@ -1,16 +1,66 @@
-import React, { useState, useEffect } from 'react'
+import React, { useState, useEffect, Fragment } from 'react'
 import axios from 'axios'
+import Header from './Header'
+import PurchaseForm from './PurchaseForm'
+import styled from 'styled-components'
+
+const Wrapper = styled.div`
+  margin-left: auto;
+  margin-right: auto;
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+`
+
+const Column = styled.div`
+  background: #fff;
+  height: 100vh;
+  overflow: scroll;
+
+  &:last-child {
+    background: #000;
+  }
+`
+
+const Main = styled.div`
+  padding-left: 50px;
+`
+
 const Package = (props) => {
-  const [packages, setPackages] = useState([])
+  const [packagee, setPackagee] = useState({})
+  const [loaded, setLoaded] = useState(false)
 
   useEffect(() => {
-    axios.get('/api/packages/1')
-    .then( resp => console.log(resp) )
+    const id = props.match.params.id
+    const url = '/api/packages/' + id
+
+    axios.get(url)
+    .then( resp => {
+      setPackagee(resp.data)
+      setLoaded(true)
+      console.log(resp.data)
+    } )
     .catch( resp => console.log(resp) )
-  }, [packages.length])
+  }, [])
 
   return (
-    <div>Package#show</div>
+    <Wrapper>
+      {
+        loaded &&
+        <Fragment>
+          <Column>
+            <Main>
+              <Header
+                attributes={packagee.data.package}
+              />
+              <div className="desc"></div>
+            </Main>
+          </Column>
+          <Column>
+            <PurchaseForm/>
+          </Column>
+        </Fragment>
+      }
+    </Wrapper>
   )
 }
 

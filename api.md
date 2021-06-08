@@ -203,6 +203,40 @@ root_url/api/packages
 
 ***
 
+## 套餐列表
+
+***
+
+## 调用方式
+* Method: GET
+* Need:
+
+```
+root_url/api/package/:id
+```
+* 参数: id
+* 输出: {
+    "status": 0,
+    "message": "获取成功",
+    "data": {
+        "package": [
+            {
+                "id": 1,
+                "title": "包月套餐",
+                "period": "月",
+                "market_price": "150.0",
+                "discount": "0.9",
+                "real_price": "135.0",
+                "package_type": "基础套餐",
+                "desc": "熊猫宽课AI推荐股票30天"
+                "watch_num": "10"
+            }
+        ]
+    }
+}
+
+***
+
 ## 订阅套餐
 
 ***
