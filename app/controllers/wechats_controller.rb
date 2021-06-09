@@ -129,7 +129,7 @@ class WechatsController < ApplicationController
       reply = ""
       packages.to_enum.with_index(11).each do |pa, index|
         reply = reply + "#{"\n" unless reply.empty?}" +
-          "#{index.to_s}. <a href='http://quant.ripple-tech.com/'>【#{pa.title}】</a>" +
+          "#{index.to_s}. <a href='http://pandaapi.ripple-tech.com/package/#{pa.id.to_s}'>【#{pa.title}】</a>" +
           "-- #{pa.real_price > 1 ? pa.real_price.to_i.to_s : pa.real_price.to_s} 元" +
           "\n(#{pa.desc})"
       end
