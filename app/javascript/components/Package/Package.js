@@ -28,7 +28,7 @@ const Main = styled.div`
 
 const Package = (props) => {
   const [packagee, setPackagee] = useState({})
-  const [openid, setOpenid] = useState({})
+  const [wxinfo, setWxinfo] = useState({})
   const [code, setCode] = useState({})
   const [loaded, setLoaded] = useState(false)
   const [iswechat, setIswechat] = useState(navigator.userAgent.toLowerCase().indexOf('micromessenger') !== -1 || typeof navigator.wxuserAgent != "undefined")
@@ -44,10 +44,10 @@ const Package = (props) => {
       }
     })
     .then( resp => {
-      if (resp.data.status == 0) {
-        setOpenid(queryString.parse(resp.data))
+      if (iswechat == false) {
+        alert("请在微信打开链接")
       }
-      console.log(resp.data)
+      setWxinfo(resp.data)
     } )
     .catch( resp => console.log(resp) )
   }, [])
@@ -55,7 +55,6 @@ const Package = (props) => {
   useEffect(() => {
     const id = props.match.params.id
     const url = '/api/packages/' + id
-    console.log("openid:" + openid)
 
     axios.get(url)
     .then( resp => {
@@ -75,7 +74,8 @@ const Package = (props) => {
     const csrfToken = document.querySelector('[name=csrf-token]').content
     axios.defaults.headers.common['X-CSRF-TOKEN'] = csrfToken
     const package_id = packagee.data.package.id
-    axios.post('/api/packages/subscribe', {package_id})
+    const openid = wxinfo.data.openid
+    axios.post('/api/packages/subscribe', {package_id, openid})
     .then(resp => {
       if (resp.data.status == 401) {
         alert("用户未验证");
