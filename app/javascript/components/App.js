@@ -5,6 +5,7 @@ import Package from './Package/Package'
 const App = () => {
   return (
     <Switch>
+      <Route exact path="/order/:id" component={Order}/>
       <Route exact path="/package/:id" component={Package}/>
     </Switch>
   )

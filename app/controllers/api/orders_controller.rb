@@ -17,7 +17,7 @@ class Api::OrdersController < Api::ApplicationController
         body: order.package.title,
         out_trade_no: order.out_trade_no,
         # total_fee: (order.amount * 100).to_i,
-        total_fee: 1,
+        total_fee: order.amount.to_f * 100,
         spbill_create_ip: ip,
         notify_url: 'http://pandaapi.ripple-tech.com/api/orders/notify',
         trade_type: 'JSAPI', # could be "MWEB", ""JSAPI", "NATIVE" or "APP",
