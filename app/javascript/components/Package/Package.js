@@ -3,6 +3,7 @@ import axios from 'axios'
 import Header from './Header'
 import PurchaseForm from './PurchaseForm'
 import styled from 'styled-components'
+import queryString from 'query-string'
 
 const Wrapper = styled.div`
   margin-left: auto;
@@ -33,10 +34,17 @@ const Package = (props) => {
   const [iswechat, setIswechat] = useState(navigator.userAgent.toLowerCase().indexOf('micromessenger') !== -1 || typeof navigator.wxuserAgent != "undefined")
 
   useEffect(() => {
-    console.log(props)
+    // console.log(props)
+    const parsed = queryString.parse(props.location.search);
+    console.log(parsed)
     const url = '/api/wechat_userinfo'
+    console.log(url)
 
-    axios.get(url)
+    axios.get(url, {
+          params: {
+            code: parsed.code
+          }
+        })
     .then( resp => {
       setOpenid(resp.data)
       console.log(resp)
