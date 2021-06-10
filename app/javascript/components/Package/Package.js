@@ -33,7 +33,19 @@ const Package = (props) => {
   const [iswechat, setIswechat] = useState(navigator.userAgent.toLowerCase().indexOf('micromessenger') !== -1 || typeof navigator.wxuserAgent != "undefined")
 
   useEffect(() => {
+    const token = "123"
+
     const url = 'https://open.weixin.qq.com/connect/oauth2/authorize?appid=wx74920a351435caa9&redirect_uri=http://pandaapi.ripple-tech.com/&response_type=code&scope=snsapi_base&state=STATE#wechat_redirect'
+
+    axios.defaults.headers.common = {
+      ...axios.defaults.headers.common,
+      'Access-Control-Allow-Origin': 'http://localhost:3000',
+      "Content-Type": 'application/json',
+      "Authorization": token ? `Token ${token}` : undefined
+   };
+   axios.defaults.preflightContinue = true;
+   //axios.defaults.crossDomain = true;
+   axios.defaults.withCredentials = !!token;
 
     axios.get(url)
     .then( resp => {
