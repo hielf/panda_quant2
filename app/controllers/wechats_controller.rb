@@ -124,12 +124,17 @@ class WechatsController < ApplicationController
 
     last_op_type, last_op_message  = user.last_op
 
+    config_file = Rails.root.join('config/wechat.yml')
+    wechat_config = YAML.load(ERB.new(File.read(config_file)).result)
+    appid = wechat_config["production"]["appid"]
+
     if op == "1"
       packages = Package.where(package_type: "基础套餐")
       reply = ""
       packages.to_enum.with_index(11).each do |pa, index|
+        url = "https://open.weixin.qq.com/connect/oauth2/authorize?appid=#{appid}&redirect_uri=http://pandaapi.ripple-tech.com/package/#{pa.id.to_s}&response_type=code&scope=snsapi_base&state=#{pa.id.to_s}#wechat_redirect"
         reply = reply + "#{"\n" unless reply.empty?}" +
-          "#{index.to_s}. <a href='http://pandaapi.ripple-tech.com/package/#{pa.id.to_s}'>【#{pa.title}】</a>" +
+          "#{index.to_s}. <a href='#{url}'>【#{pa.title}】</a>" +
           "-- #{pa.real_price > 1 ? pa.real_price.to_i.to_s : pa.real_price.to_s} 元" +
           "\n(#{pa.desc})"
       end
@@ -139,8 +144,9 @@ class WechatsController < ApplicationController
       packages = Package.where(package_type: "高级套餐")
       reply = ""
       packages.to_enum.with_index(21).each do |pa, index|
+        url = "https://open.weixin.qq.com/connect/oauth2/authorize?appid=#{appid}&redirect_uri=http://pandaapi.ripple-tech.com/package/#{pa.id.to_s}&response_type=code&scope=snsapi_base&state=#{pa.id.to_s}#wechat_redirect"
         reply = reply + "#{"\n" unless reply.empty?}" +
-          "#{index.to_s}. <a href='http://quant.ripple-tech.com/'>【#{pa.title}】</a>" +
+          "#{index.to_s}. <a href='#{url}'>【#{pa.title}】</a>" +
           "-- #{pa.real_price > 1 ? pa.real_price.to_i.to_s : pa.real_price.to_s} 元" +
           "\n(#{pa.desc})"
       end
