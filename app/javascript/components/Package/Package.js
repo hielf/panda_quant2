@@ -44,9 +44,10 @@ const Package = (props) => {
           }
         })
     .then( resp => {
-      setOpenid(resp.data)
-      console.log(resp)
-      console.log(openid)
+      if (resp.data.status == 0) {
+        setOpenid(resp.data.data.openid)
+      }
+      console.log(resp.data)
     } )
     .catch( resp => console.log(resp) )
   }, [])
@@ -54,6 +55,7 @@ const Package = (props) => {
   useEffect(() => {
     const id = props.match.params.id
     const url = '/api/packages/' + id
+    console.log("openid:" + openid)
 
     axios.get(url)
     .then( resp => {
