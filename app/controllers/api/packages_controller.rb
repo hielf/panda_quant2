@@ -1,5 +1,5 @@
 class Api::PackagesController < Api::ApplicationController
-  skip_before_action :authenticate_user!, only: [:index, :show]
+  skip_before_action :authenticate_user!, only: [:index, :show, :subscribe]
 
   def create
     m_requires! [:title, :period, :market_price, :discount, :real_price, :package_type, :desc]
@@ -33,6 +33,7 @@ class Api::PackagesController < Api::ApplicationController
     begin
       package = Package.find_by(id: params[:package_id])
       result = [1, '订阅下单失败', nil]
+      current_user = User.find_by(openid: params[:openid]) if !params[:openid].to_s.blank?
       Order.transaction do
         order = current_user.orders.new(package_id: package.id, amount: package.real_price, out_trade_no: current_user.id.to_s + "_" + Time.now.to_i.to_s)
         if order.save!
