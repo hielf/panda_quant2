@@ -39,13 +39,13 @@ const Package = (props) => {
     const url = '/api/wechat_userinfo'
 
     axios.get(url, {
-          params: {
-            code: parsed.code
-          }
-        })
+      params: {
+        code: parsed.code
+      }
+    })
     .then( resp => {
       if (resp.data.status == 0) {
-        setOpenid(resp.data.data.openid)
+        setOpenid(queryString.parse(resp.data))
       }
       console.log(resp.data)
     } )
