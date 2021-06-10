@@ -36,9 +36,7 @@ const Package = (props) => {
   useEffect(() => {
     // console.log(props)
     const parsed = queryString.parse(props.location.search);
-    console.log(parsed)
     const url = '/api/wechat_userinfo'
-    console.log(url)
 
     axios.get(url, {
           params: {
