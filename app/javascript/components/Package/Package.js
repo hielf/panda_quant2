@@ -28,8 +28,8 @@ const Main = styled.div`
 
 const Package = (props) => {
   const [packagee, setPackagee] = useState({})
+  const [order, setOrder] = useState({})
   const [wxinfo, setWxinfo] = useState({})
-  const [code, setCode] = useState({})
   const [loaded, setLoaded] = useState(false)
   const [iswechat, setIswechat] = useState(navigator.userAgent.toLowerCase().indexOf('micromessenger') !== -1 || typeof navigator.wxuserAgent != "undefined")
 
@@ -74,13 +74,22 @@ const Package = (props) => {
     const csrfToken = document.querySelector('[name=csrf-token]').content
     axios.defaults.headers.common['X-CSRF-TOKEN'] = csrfToken
     const package_id = packagee.data.package.id
-    const openid = wxinfo.data.openid
+    const openid = "oEJU4v32gZGQlCMCuUmZMDNgxUHs" //wxinfo.data.openid
     axios.post('/api/packages/subscribe', {package_id, openid})
     .then(resp => {
       if (resp.data.status != 0) {
         alert("用户未验证");
       }
       console.log(resp.data);
+      // setOrder(resp.data)
+      const order_id = resp.data.data.id
+      axios.post('/api/orders/pre_pay', {"id": order_id})
+      .then(resp => {
+        console.log(resp.data);
+      })
+      .catch(function (error) {
+        console.log(error);
+      });
     })
     .catch(function (error) {
       console.log(error);

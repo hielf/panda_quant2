@@ -129,6 +129,42 @@ root_url/api/accounts/miniprogram_sign_in
     }
 }
 
+***
+
+## 简化登录
+
+***
+
+## 调用方式
+* Method: POST
+* Need:
+
+```
+root_url/api/accounts/simple_sign_in
+```
+* 参数: openid(string)
+* 输出: {
+    "status": 0,
+    "message": "登录成功",
+    "data": {
+        "openid": "o_iF85QZAWjlqREIc85WtM0klEFQ\"",
+        "mobile": "13020112961",
+        "failed_attempts": 0,
+        "current_sign_in_at": "2019-07-06T04:03:21.000+08:00",
+        "last_sign_in_at": "2019-07-06T04:00:55.000+08:00",
+        "current_sign_in_ip": "::1",
+        "last_sign_in_ip": "::1",
+        "sign_in_count": 2,
+        "locked_at": null,
+        "access_token": "TVExiqje+Paj3r0TmBR4nELmOeQrg9JiaJzbiai7uulfcJOJVexgioEcNZt/BZWFwyEXqrjRYmhCC3cL4pQRWg==",
+        "id": 3,
+        "nickname": null,
+        "password_digest": null,
+        "created_at": "2019-07-06T03:51:39.000+08:00",
+        "updated_at": "2019-07-06T04:03:21.000+08:00",
+        "avatar": null
+    }
+}
 
 ***
 

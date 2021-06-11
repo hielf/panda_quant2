@@ -138,6 +138,8 @@ module Api
       token, options = ActionController::HttpAuthentication::Token.token_and_options(request)
       # Rails.logger.warn "request headers token: #{token}"
       # Rails.logger.warn "request headers options: #{options}"
+      p "request headers token: #{token}"
+      p "request headers options: #{options}"
       mobile = options.blank? ? nil : options[:mobile]
       # user = mobile && User.find_by(mobile: mobile)
       user = token && User.find_by(access_token: token)

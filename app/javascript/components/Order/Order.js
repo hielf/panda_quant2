@@ -1,7 +1,7 @@
 import React, { useState, useEffect, Fragment } from 'react'
 import axios from 'axios'
 import Header from './Header'
-import PurchaseForm from './PurchaseForm'
+import PayForm from './PayForm'
 import styled from 'styled-components'
 import queryString from 'query-string'
 
@@ -26,39 +26,18 @@ const Main = styled.div`
   padding-left: 50px;
 `
 
-const Package = (props) => {
-  const [packagee, setPackagee] = useState({})
-  const [wxinfo, setWxinfo] = useState({})
-  const [code, setCode] = useState({})
+const Order = (props) => {
+  const [order, setOrder] = useState({})
   const [loaded, setLoaded] = useState(false)
   const [iswechat, setIswechat] = useState(navigator.userAgent.toLowerCase().indexOf('micromessenger') !== -1 || typeof navigator.wxuserAgent != "undefined")
 
   useEffect(() => {
-    // console.log(props)
-    const parsed = queryString.parse(props.location.search);
-    const url = '/api/wechat_userinfo'
-
-    axios.get(url, {
-      params: {
-        code: parsed.code
-      }
-    })
-    .then( resp => {
-      if (iswechat == false) {
-        alert("请在微信打开链接")
-      }
-      setWxinfo(resp.data)
-    } )
-    .catch( resp => console.log(resp) )
-  }, [])
-
-  useEffect(() => {
     const id = props.match.params.id
-    const url = '/api/packages/' + id
+    const url = '/api/orders/' + id
 
     axios.get(url)
     .then( resp => {
-      setPackagee(resp.data)
+      setOrder(resp.data)
       setLoaded(true)
     } )
     .catch( resp => console.log(resp) )
@@ -73,9 +52,8 @@ const Package = (props) => {
 
     const csrfToken = document.querySelector('[name=csrf-token]').content
     axios.defaults.headers.common['X-CSRF-TOKEN'] = csrfToken
-    const package_id = packagee.data.package.id
-    const openid = wxinfo.data.openid
-    axios.post('/api/packages/subscribe', {package_id, openid})
+    const order_id = order.data.package.id
+    axios.post('/api/orders/pre_pay', {order_id})
     .then(resp => {
       if (resp.data.status != 0) {
         alert("用户未验证");
@@ -95,7 +73,7 @@ const Package = (props) => {
           <Column>
             <Main>
               <Header
-                attributes={packagee.data.package}
+                attributes={order.data.order}
               />
               <div className="desc"></div>
             </Main>
@@ -104,7 +82,7 @@ const Package = (props) => {
             <PurchaseForm
               handleChange={handleChange}
               handleSubmit={handleSubmit}
-              attributes={packagee.data.package}
+              attributes={order.data.order}
             />
           </Column>
         </Fragment>
@@ -113,4 +91,4 @@ const Package = (props) => {
   )
 }
 
-export default Package
+export default Order

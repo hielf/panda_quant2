@@ -1,7 +1,7 @@
 # encoding: utf-8
 class Api::AccountsController < Api::ApplicationController
   # include ApplicationHelper
-  skip_before_action :authenticate_user!, only: [:sign_in, :miniprogram_sign_in]
+  skip_before_action :authenticate_user!, only: [:sign_in, :miniprogram_sign_in, :simple_sign_in]
 
   def sign_in
     m_requires! [:mobile, :verify_code]
@@ -35,6 +35,22 @@ class Api::AccountsController < Api::ApplicationController
 
     @user = User.find_or_create_by(openid: openid)
     @user.mobile = mobile
+
+    status, message = @user.login("mini", request.ip) if @user
+    if status
+      cookies[:token] = { :value => @user.access_token, :expires => Time.now + 360.days}
+      cookies[:mobile] = { :value => @user.mobile, :expires => Time.now + 360.days}
+      # cookies[:openid] = { :value => @user.openid, :expires => Time.now + 180.days}
+      render_json([0, '登录成功', @user])
+    else
+      render_json([401, message])
+    end
+  end
+
+  def simple_sign_in
+    m_requires! [:openid]
+
+    @user = User.find_or_create_by(openid: openid)
 
     status, message = @user.login("mini", request.ip) if @user
     if status
