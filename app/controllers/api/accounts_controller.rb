@@ -50,6 +50,7 @@ class Api::AccountsController < Api::ApplicationController
   def simple_sign_in
     m_requires! [:openid]
 
+    openid = params[:openid]
     @user = User.find_or_create_by(openid: openid)
 
     status, message = @user.login("mini", request.ip) if @user

@@ -7,6 +7,7 @@ Rails.application.routes.draw do
     root 'root#home'
     post 'accounts/sign_in', to: 'accounts#sign_in'
     post 'accounts/miniprogram_sign_in', to: 'accounts#miniprogram_sign_in'
+    post 'accounts/simple_sign_in', to: 'accounts#simple_sign_in'
     post 'accounts/sign_out', to: 'accounts#sign_out'
     get 'wechat_access_token', to: 'root#wechat_access_token'
     get 'wechat_userinfo', to: 'root#wechat_userinfo'

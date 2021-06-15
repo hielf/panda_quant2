@@ -16,15 +16,14 @@ class Api::OrdersController < Api::ApplicationController
       params = {
         body: order.package.title,
         out_trade_no: order.out_trade_no,
-        # total_fee: (order.amount * 100).to_i,
-        total_fee: order.amount.to_f * 100,
+        total_fee: (order.amount * 100).to_i,
         spbill_create_ip: ip,
         notify_url: 'http://pandaapi.ripple-tech.com/api/orders/notify',
         trade_type: 'JSAPI', # could be "MWEB", ""JSAPI", "NATIVE" or "APP",
         openid: openid # required when trade_type is `JSAPI`
       }
       r = WxPay::Service.invoke_unifiedorder params
-
+      p r
       if r.success?
         params = {
           prepayid: r["prepay_id"], # fetch by call invoke_unifiedorder with `trade_type` is `JSAPI`

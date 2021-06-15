@@ -30,6 +30,7 @@ const Package = (props) => {
   const [packagee, setPackagee] = useState({})
   const [order, setOrder] = useState({})
   const [wxinfo, setWxinfo] = useState({})
+  const [login, setLogin] = useState({})
   const [loaded, setLoaded] = useState(false)
   const [iswechat, setIswechat] = useState(navigator.userAgent.toLowerCase().indexOf('micromessenger') !== -1 || typeof navigator.wxuserAgent != "undefined")
 
@@ -48,6 +49,16 @@ const Package = (props) => {
         alert("请在微信打开链接")
       }
       setWxinfo(resp.data)
+
+      const openid = wxinfo.data.openid
+      axios.post('/api/accounts/simple_sign_in', {"openid": openid})
+      .then(resp => {
+        console.log(resp.data);
+        setLogin(resp.data.data)
+      })
+      .catch(function (error) {
+        console.log(error);
+      });
     } )
     .catch( resp => console.log(resp) )
   }, [])
@@ -71,11 +82,16 @@ const Package = (props) => {
   const handleSubmit = (e) => {
     e.preventDefault()
 
+    const headers = {
+      Authorization: `Token token=${login.access_token},mobile=${login.mobile}`
+    }
     const csrfToken = document.querySelector('[name=csrf-token]').content
     axios.defaults.headers.common['X-CSRF-TOKEN'] = csrfToken
     const package_id = packagee.data.package.id
-    const openid = "oEJU4v32gZGQlCMCuUmZMDNgxUHs" //wxinfo.data.openid
-    axios.post('/api/packages/subscribe', {package_id, openid})
+    const openid = wxinfo.data.openid
+    axios.post('/api/packages/subscribe', {package_id, openid}, {
+      headers: headers
+    })
     .then(resp => {
       if (resp.data.status != 0) {
         alert("用户未验证");
@@ -83,7 +99,9 @@ const Package = (props) => {
       console.log(resp.data);
       // setOrder(resp.data)
       const order_id = resp.data.data.id
-      axios.post('/api/orders/pre_pay', {"id": order_id})
+      axios.post('/api/orders/pre_pay', {"id": order_id}, {
+        headers: headers
+      })
       .then(resp => {
         console.log(resp.data);
       })
