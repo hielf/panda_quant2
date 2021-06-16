@@ -47,6 +47,7 @@ const Package = (props) => {
     .then( resp => {
       setWxinfo(resp.data)
       console.log(resp.data)
+      console.log(wxinfo)
       // if (iswechat == false) {
       //   alert("请在微信打开链接")
       // }
