@@ -45,14 +45,14 @@ const Package = (props) => {
       }
     })
     .then( resp => {
-      setWxinfo(resp.data)
+      setWxinfo(resp.data.data)
       console.log(resp.data)
       console.log(wxinfo)
       // if (iswechat == false) {
       //   alert("请在微信打开链接")
       // }
 
-      const openid = wxinfo.data.openid
+      const openid = resp.data.data.openid
       // const openid = 'oEJU4v32gZGQlCMCuUmZMDNgxUHs'
       axios.post('/api/accounts/simple_sign_in', {"openid": openid})
       .then(resp => {
@@ -91,7 +91,7 @@ const Package = (props) => {
     const csrfToken = document.querySelector('[name=csrf-token]').content
     axios.defaults.headers.common['X-CSRF-TOKEN'] = csrfToken
     const package_id = packagee.data.package.id
-    const openid = wxinfo.data.openid
+    const openid = wxinfo.openid
     // const openid = 'oEJU4v32gZGQlCMCuUmZMDNgxUHs'
     axios.post('/api/packages/subscribe', {package_id, openid}, {
       headers: headers
