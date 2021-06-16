@@ -36,7 +36,7 @@ const Package = (props) => {
   const [iswechat, setIswechat] = useState(navigator.userAgent.toLowerCase().indexOf('micromessenger') !== -1 || typeof navigator.wxuserAgent != "undefined")
 
   useEffect(() => {
-    // console.log(props)
+    console.log(props)
     const parsed = queryString.parse(props.location.search);
     const url = '/api/wechat_userinfo'
 
