@@ -106,17 +106,16 @@ const Package = (props) => {
         headers: headers
       })
       .then(resp => {
-        debugger
         console.log(resp.data)
-        setOrder(resp.data.data)
+        // setOrder(resp.data.data)
         WeixinJSBridge.invoke(
           'getBrandWCPayRequest', {
-            "appId":order.appId,     //公众号名称，由商户传入
-            "timeStamp":order.timeStamp,//时间戳，自1970年以来的秒数
-            "nonceStr":order.nonceStr, //随机串
-            "package":order.package, //预支付交易码
-            "signType":order.signType,//微信签名方式：
-            "paySign":order..paySign //微信签名
+            "appId":resp.data.data.appId,     //公众号名称，由商户传入
+            "timeStamp":resp.data.data.timeStamp,//时间戳，自1970年以来的秒数
+            "nonceStr":resp.data.data.nonceStr, //随机串
+            "package":resp.data.data.package, //预支付交易码
+            "signType":resp.data.data.signType,//微信签名方式：
+            "paySign":resp.data.data.paySign //微信签名
           },
           function(res){
             if(res.err_msg == "get_brand_wcpay_request:ok" ){
