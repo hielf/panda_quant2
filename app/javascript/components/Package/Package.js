@@ -4,6 +4,7 @@ import Header from './Header'
 import PurchaseForm from './PurchaseForm'
 import styled from 'styled-components'
 import queryString from 'query-string'
+import { WxPay } from '../Utils/WxPay'
 
 const Wrapper = styled.div`
   margin-left: auto;
@@ -50,7 +51,8 @@ const Package = (props) => {
       }
       setWxinfo(resp.data)
 
-      const openid = wxinfo.data.openid
+      // const openid = wxinfo.data.openid
+      const openid = 'oEJU4v32gZGQlCMCuUmZMDNgxUHs'
       axios.post('/api/accounts/simple_sign_in', {"openid": openid})
       .then(resp => {
         console.log(resp.data);
@@ -88,7 +90,8 @@ const Package = (props) => {
     const csrfToken = document.querySelector('[name=csrf-token]').content
     axios.defaults.headers.common['X-CSRF-TOKEN'] = csrfToken
     const package_id = packagee.data.package.id
-    const openid = wxinfo.data.openid
+    // const openid = wxinfo.data.openid
+    const openid = 'oEJU4v32gZGQlCMCuUmZMDNgxUHs'
     axios.post('/api/packages/subscribe', {package_id, openid}, {
       headers: headers
     })
@@ -103,7 +106,9 @@ const Package = (props) => {
         headers: headers
       })
       .then(resp => {
+        debugger
         console.log(resp.data);
+        WxPay(resp.data)
       })
       .catch(function (error) {
         console.log(error);
