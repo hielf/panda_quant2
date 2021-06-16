@@ -46,11 +46,12 @@ const Package = (props) => {
       }
     })
     .then( resp => {
+      console.log(resp.data)
       if (iswechat == false) {
         alert("请在微信打开链接")
       }
       setWxinfo(resp.data)
-      console.log(wxinfo)
+
       const openid = wxinfo.data.openid
       // const openid = 'oEJU4v32gZGQlCMCuUmZMDNgxUHs'
       axios.post('/api/accounts/simple_sign_in', {"openid": openid})
