@@ -48,9 +48,9 @@ const Package = (props) => {
       setWxinfo(resp.data.data)
       console.log(resp.data)
       console.log(wxinfo)
-      // if (iswechat == false) {
-      //   alert("请在微信打开链接")
-      // }
+      if (iswechat == false) {
+        alert("请在微信打开链接")
+      }
 
       const openid = resp.data.data.openid
       // const openid = 'oEJU4v32gZGQlCMCuUmZMDNgxUHs'
@@ -108,15 +108,15 @@ const Package = (props) => {
       .then(resp => {
         debugger
         console.log(resp.data)
-        setOrder(resp.data)
+        setOrder(resp.data.data)
         WeixinJSBridge.invoke(
           'getBrandWCPayRequest', {
-            "appId":order.data.appId,     //公众号名称，由商户传入
-            "timeStamp":order.data.timeStamp,//时间戳，自1970年以来的秒数
-            "nonceStr":order.data.nonceStr, //随机串
-            "package":order.data.package, //预支付交易码
-            "signType":order.data.signType,//微信签名方式：
-            "paySign":order.data.paySign //微信签名
+            "appId":order.appId,     //公众号名称，由商户传入
+            "timeStamp":order.timeStamp,//时间戳，自1970年以来的秒数
+            "nonceStr":order.nonceStr, //随机串
+            "package":order.package, //预支付交易码
+            "signType":order.signType,//微信签名方式：
+            "paySign":order..paySign //微信签名
           },
           function(res){
             if(res.err_msg == "get_brand_wcpay_request:ok" ){
