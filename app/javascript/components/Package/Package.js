@@ -35,8 +35,7 @@ const Package = (props) => {
   const [loaded, setLoaded] = useState(false)
   const [iswechat, setIswechat] = useState(navigator.userAgent.toLowerCase().indexOf('micromessenger') !== -1 || typeof navigator.wxuserAgent != "undefined")
   const parsed = queryString.parse(props.location.search)
-  alert(props)
-  
+
   useEffect(() => {
     const url = '/api/wechat_userinfo'
 
@@ -47,16 +46,16 @@ const Package = (props) => {
     })
     .then( resp => {
       console.log(resp.data)
-      // if (iswechat == false) {
-      //   alert("请在微信打开链接")
-      // }
+      if (iswechat == false) {
+        alert("请在微信打开链接")
+      }
       setWxinfo(resp.data)
 
       const openid = wxinfo.data.openid
       // const openid = 'oEJU4v32gZGQlCMCuUmZMDNgxUHs'
       axios.post('/api/accounts/simple_sign_in', {"openid": openid})
       .then(resp => {
-        console.log(resp.data);
+        console.log(resp.data)
         setLogin(resp.data.data)
       })
       .catch(function (error) {
@@ -98,9 +97,9 @@ const Package = (props) => {
     })
     .then(resp => {
       if (resp.data.status != 0) {
-        alert("用户未验证");
+        alert("用户未验证")
       }
-      console.log(resp.data);
+      console.log(resp.data)
       // setOrder(resp.data)
       const order_id = resp.data.data.id
       axios.post('/api/orders/pre_pay', {"id": order_id}, {
@@ -108,7 +107,7 @@ const Package = (props) => {
       })
       .then(resp => {
         debugger
-        console.log(resp.data);
+        console.log(resp.data)
         WxPay(resp.data)
       })
       .catch(function (error) {
