@@ -34,10 +34,10 @@ const Package = (props) => {
   const [login, setLogin] = useState({})
   const [loaded, setLoaded] = useState(false)
   const [iswechat, setIswechat] = useState(navigator.userAgent.toLowerCase().indexOf('micromessenger') !== -1 || typeof navigator.wxuserAgent != "undefined")
+  console.log(props)
+  const parsed = queryString.parse(props.location.search);
 
   useEffect(() => {
-    console.log(props)
-    const parsed = queryString.parse(props.location.search);
     const url = '/api/wechat_userinfo'
 
     axios.get(url, {
@@ -47,9 +47,9 @@ const Package = (props) => {
     })
     .then( resp => {
       console.log(resp.data)
-      if (iswechat == false) {
-        alert("请在微信打开链接")
-      }
+      // if (iswechat == false) {
+      //   alert("请在微信打开链接")
+      // }
       setWxinfo(resp.data)
 
       const openid = wxinfo.data.openid
