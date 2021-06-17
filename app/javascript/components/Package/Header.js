@@ -9,6 +9,10 @@ const Wrapper = styled.div`
   color: #fec107;
   text-align: center;
 `
+const Title = styled.h1`
+  font-size: 28px;
+  padding: 10px 0;
+`
 
 const Packagetype = styled.div`
   color: #757575;
@@ -38,7 +42,7 @@ const Realprice = styled.div`
 `
 
 const Desc = styled.div`
-  font-size: 15px;
+  font-size: 12px;
   font-weight: light;
   padding: 10px 0;
 `
@@ -48,7 +52,7 @@ const Header = (props) => {
 
   return (
     <Wrapper>
-      <h1>{title}</h1>
+      <Title>{title}</Title>
       <div>
         <Desc>{desc}</Desc>
         <Realprice>¥ {real_price}</Realprice>
