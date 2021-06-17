@@ -10,7 +10,8 @@ const Wrapper = styled.div`
   text-align: center;
 `
 const Title = styled.h1`
-  font-size: 28px;
+  font-size: 30px;
+  color: #ffd658;
   padding: 10px 0;
 `
 
@@ -42,7 +43,7 @@ const Realprice = styled.div`
 `
 
 const Desc = styled.div`
-  font-size: 12px;
+  font-size: 14px;
   font-weight: light;
   padding: 10px 0;
 `
