@@ -7,24 +7,22 @@ import queryString from 'query-string'
 // import { WxPay } from '../Utils/WxPay'
 
 const Wrapper = styled.div`
-  margin-left: auto;
-  margin-right: auto;
-  display: grid;
-  grid-template-columns: repeat(2, 1fr);
+  max-width: 500px;
+  width: 100%;
+  background: #fec107;
+  margin: 20px auto;
+  padding: 30px;
+  box-shadow: 1px 1px 2px rgba(0,0,0,0.125);
 `
 
 const Column = styled.div`
   background: #fff;
   height: 100vh;
   overflow: scroll;
-
-  &:last-child {
-    background: #000;
-  }
 `
 
 const Main = styled.div`
-  padding-left: 50px;
+  padding: 0;
 `
 
 const Package = (props) => {
@@ -150,14 +148,12 @@ const Package = (props) => {
                 attributes={packagee.data.package}
               />
               <div className="desc"></div>
+              <PurchaseForm
+                handleChange={handleChange}
+                handleSubmit={handleSubmit}
+                attributes={packagee.data.package}
+              />
             </Main>
-          </Column>
-          <Column>
-            <PurchaseForm
-              handleChange={handleChange}
-              handleSubmit={handleSubmit}
-              attributes={packagee.data.package}
-            />
           </Column>
         </Fragment>
       }

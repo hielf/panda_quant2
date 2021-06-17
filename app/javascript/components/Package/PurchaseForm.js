@@ -4,37 +4,42 @@ import styled from 'styled-components'
 
 const Wrapper = styled.div`
   background: #fff;
-  padding: 20px;
-  height: 100vh;
+  width: 100%;
+  padding: 20px 0 20px 0;
   padding-top: 100px;
+  text-align: center;
+
+  &:last-child {
+    margin-bottom: 0;
+  }
 `
 
 const SubmitBtn = styled.button`
   color: #fff;
-  background: #333;
-  padding: 12px;
+  background: #fec107;
+  padding: 8px 10px;
   font-size: 18px;
   cursor: pointer;
   transition: ease-in-out 0.1s;
-  border: 1px solid #fff;
-  width: 100%;
+  border: 0;
+  border-radius: 3px;
+  outline: none;
+  width: 80%;
   margin-top: 20px;
 
   &:hover {
-    background: #fff;
-    color: #333;
-    border: 1px solid #fff;
+    background: #ffd658;
   }
 `
 
 const PurchaseForm = (props) => {
 
   return (
-    <div className="wrapper">
+    <Wrapper>
       <form onSubmit={props.handleSubmit}>
-        <SubmitBtn type="submit">购买</SubmitBtn>
+        <SubmitBtn>购买</SubmitBtn>
       </form>
-    </div>
+    </Wrapper>
   )
 }
 

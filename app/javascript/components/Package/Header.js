@@ -2,19 +2,15 @@ import React from 'react'
 import styled from 'styled-components'
 
 const Wrapper = styled.div`
-  padding: 50px 100px 50px 0;
-  font-size: 30px;
-
-  img {
-    height: 60px;
-    width: 60px;
-    border-radius: 100%;
-    border: 1px solid rgba(0,0,0,0.1);
-    margin-bottom: -8px;
-  }
+  font-size: 24px;
+  font-weight: 700;
+  margin-bottom: 25px;
+  color: #fec107;
+  text-align: center;
 `
 
 const Packagetype = styled.div`
+  color: #757575;
   font-size: 18px;
   padding: 10px 0;
 `
@@ -26,9 +22,11 @@ const Watchnum = styled.div`
 `
 
 const Marketprice = styled.div`
+  color: #d5dbd9;
   font-size: 18px;
   font-weight: bold;
   padding: 10px 0;
+  text-decoration: line-through;
 `
 
 const Realprice = styled.div`
