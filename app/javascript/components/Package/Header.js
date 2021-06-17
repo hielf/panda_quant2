@@ -4,6 +4,7 @@ import styled from 'styled-components'
 const Wrapper = styled.div`
   font-size: 24px;
   font-weight: 700;
+  font-family: MicrosoftYaHei;
   margin-bottom: 25px;
   color: #fec107;
   text-align: center;
@@ -22,21 +23,22 @@ const Watchnum = styled.div`
 `
 
 const Marketprice = styled.div`
-  color: #d5dbd9;
+  color: #6d757a;
   font-size: 18px;
-  font-weight: bold;
+  font-weight: light;
   padding: 10px 0;
   text-decoration: line-through;
 `
 
 const Realprice = styled.div`
-  font-size: 18px;
-  font-weight: bold;
+  font-size: 24px;
+  font-weight: light;
+  color: #fec107;
   padding: 10px 0;
 `
 
 const Desc = styled.div`
-  font-size: 10px;
+  font-size: 15px;
   font-weight: light;
   padding: 10px 0;
 `
@@ -48,10 +50,9 @@ const Header = (props) => {
     <Wrapper>
       <h1>{title}</h1>
       <div>
-        <Packagetype>({package_type})</Packagetype>
-        <Marketprice>市价：{market_price} 元</Marketprice>
-        <Realprice>现价：{real_price} 元</Realprice>
         <Desc>{desc}</Desc>
+        <Realprice>¥ {real_price}</Realprice>
+        <Marketprice>¥ {market_price}</Marketprice>
       </div>
     </Wrapper>
   )
