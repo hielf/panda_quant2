@@ -7,17 +7,14 @@ import queryString from 'query-string'
 // import { WxPay } from '../Utils/WxPay'
 
 const Wrapper = styled.div`
-  max-width: 500px;
-  width: 100%;
   background: #fec107;
-  margin: 20px auto;
-  padding: 30px;
-  box-shadow: 1px 1px 2px rgba(0,0,0,0.125);
+  margin: 5px 5px;
+  padding: 1px;
 `
 
 const Column = styled.div`
   background: #fff;
-  height: 100vh;
+  height: 95vh;
   overflow: scroll;
 `
 

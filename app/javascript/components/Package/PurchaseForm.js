@@ -6,7 +6,6 @@ const Wrapper = styled.div`
   background: #fff;
   width: 100%;
   padding: 20px 0 20px 0;
-  padding-top: 100px;
   text-align: center;
 
   &:last-child {
