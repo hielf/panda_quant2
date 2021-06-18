@@ -43,7 +43,7 @@ const Realprice = styled.div`
 `
 
 const Desc = styled.div`
-  font-size: 14px;
+  font-size: 18px;
   font-weight: light;
   padding: 10px 0;
 `
