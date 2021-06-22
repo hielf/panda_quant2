@@ -10,21 +10,23 @@ const Wrapper = styled.div`
 
 const Column = styled.div`
   background: #fff;
-  height: 95vh;
-  overflow: scroll;
+  /* line-height: 95vh; */
 `
 
 const Main = styled.div`
+  display: table;
   padding: 0;
-  height: 50vh;
+  height: 95vh;  
+  /* height: 50vh; */
 `
 
-const Message = styled.div`
+const Message = styled.span`
   color: #fec107;
-  font-size: 24px;
+  font-size: 20px;
   font-weight: light;
   font-family: MicrosoftYaHei;
-  padding: 45vh;
+  display: table-cell;
+  vertical-align: middle;
 `
 
 const Subscribtion = (props) => {
