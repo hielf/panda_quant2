@@ -94,6 +94,8 @@ const Package = (props) => {
     .then(resp => {
       if (resp.data.status != 0) {
         alert("用户未验证")
+        location.replace(`/subscribtion/${package_id}`)
+        // props.history.push('/package/success')
       }
       console.log(resp.data)
       const order_id = resp.data.data.id
