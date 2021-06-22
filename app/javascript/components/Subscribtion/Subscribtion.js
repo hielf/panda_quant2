@@ -23,7 +23,7 @@ const Main = styled.div`
 
 const Title = styled.div`
   color: #ffd658;
-  font-size: 22px;
+  font-size: 24px;
   font-weight: light;
   /* display: table-cell; */
   vertical-align: middle;
