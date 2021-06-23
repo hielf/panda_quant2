@@ -170,7 +170,7 @@ class WechatsController < ApplicationController
             "#{sl.stock_display_name.ljust(6, ' ')}(<a href='#{url}'>" +
             "#{sl.stock_code}</a>)"
           if index % 5 == 0
-            wechat.custom_message_send Wechat::Message.to(openid).text(reply.slice(0..682))
+            wechat.custom_message_send Wechat::Message.to(openid).text(reply)
             reply = ""
             sleep 0.1
           end
