@@ -169,9 +169,15 @@ class WechatsController < ApplicationController
             "#{index.to_s}.".ljust(4, ' ') +
             "#{sl.stock_display_name.ljust(6, ' ')}(<a href='#{url}'>" +
             "#{sl.stock_code}</a>)"
+          if index % 4 == 0
+            wechat.custom_message_send Wechat::Message.to(openid).text(reply.slice(0..682))
+            reply = ""
+            sleep 0.1
+          end
         end
+        # rest of reply
+        wechat.custom_message_send Wechat::Message.to(openid).text(reply.slice(0..682))
       end
-      wechat.custom_message_send Wechat::Message.to(openid).text(reply.slice(0..682))
 
     elsif op == "5" #“删除”
       wechat.custom_message_send Wechat::Message.to(openid).text("回复6位股票代码删除")
