@@ -15,6 +15,7 @@ gem 'mysql2'
 
 # Use Puma as the app server
 gem 'puma', '~> 4.3'
+gem 'god'
 # Use SCSS for stylesheets
 # gem 'sassc-rails'
 # Use Uglifier as compressor for JavaScript assets

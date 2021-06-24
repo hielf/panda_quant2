@@ -6,7 +6,7 @@ set :application, "panda_quant2"
 # set :user, "deploy"
 set :puma_threads, [4, 16]
 set :puma_workers, 0
-# set :rails_env, 'production'
+set :rails_env, 'production'
 # set :rvm_ruby_version, '2.4.0@panda_quant2'
 
 # Default branch is :master
@@ -45,7 +45,7 @@ set :default_env, {rvm_bin_path: '~/.rvm/bin'}
 # Uncomment the following to require manually verifying the host key before first deploy.
 # set :ssh_options, verify_host_key: :secure
 set :pty, true
-set :use_sudo, true
+set :use_sudo, false
 set :stage, :production
 set :deploy_via, :remote_cache
 set :puma_bind, "unix://#{shared_path}/tmp/sockets/#{fetch(:application)}-puma.sock"
@@ -59,6 +59,8 @@ set :puma_worker_timeout, nil
 set :puma_init_active_record, true # Change to true if using ActiveRecord
 
 set :whenever_identifier, ->{ "#{fetch(:application)}_#{fetch(:stage)}" }
+
+# set :god_roles, [:app, :web]
 
 namespace :puma do
   desc 'Create Directories for Puma Pids and Socket'
@@ -104,6 +106,7 @@ namespace :deploy do
   task :restart do
     on roles(:app), in: :sequence, wait: 5 do
       invoke 'puma:restart'
+      # invoke 'god:deploy'
     end
   end
 
@@ -111,63 +114,60 @@ namespace :deploy do
   after :finishing, :compile_assets
   after :finishing, :cleanup
   # after :finishing, :restart
+end
 
-  namespace :god do
-    def god_is_running
-      capture(:bundle, "exec god status > /dev/null 2>&1 || echo 'god not running'") != 'god not running'
-    end
+namespace :god do
+  def god_is_running
+    capture(:bundle, "exec god status > /dev/null 2>&1 || echo 'god not running'") != 'god not running'
+  end
 
-    # Must be executed within SSHKit context
-    def config_file
-      "#{release_path}/config.god"
-    end
+  # Must be executed within SSHKit context
+  def config_file
+    "#{release_path}/config.god"
+  end
 
-    # Must be executed within SSHKit context
-    def start_god
-      # execute :bundle, "exec god -c #{config_file}"
-      on roles(:app) do
-        execute "sudo -H -u deploy /bin/bash -l -c 'god -c #{release_path}/config.god'"
-      end
-    end
+  # Must be executed within SSHKit context
+  def start_god
+    execute :bundle, "exec god -c #{config_file}"
+  end
 
-    desc "Start god and his processes"
-    task :start do
-      on roles(:app) do
-        within release_path do
-          with RAILS_ENV: fetch(:rails_env) do
-            start_god
-          end
-        end
-      end
-    end
-
-    desc "Terminate god and his processes"
-    task :stop do
-      on roles(:app) do
-        within release_path do
-          if god_is_running
-            execute :bundle, "exec god terminate"
-          end
-        end
-      end
-    end
-
-    desc "Restart god's child processes"
-    task :restart do
-      on roles(:app) do
-        within release_path do
-          with RAILS_ENV: fetch(:rails_env) do
-            if god_is_running
-              execute :bundle, "exec god load #{config_file}"
-              execute :bundle, "exec god restart"
-            else
-              start_god
-            end
-          end
+  desc "Start god and his processes"
+  task :start do
+    on roles(:app) do
+      within release_path do
+        with RAILS_ENV: fetch(:rails_env) do
+          start_god
         end
       end
     end
   end
 
-  after "deploy:finished", "god:restart"
+  desc "Terminate god and his processes"
+  task :stop do
+    on roles(:app) do
+      within release_path do
+        if god_is_running
+          execute :bundle, "exec god terminate"
+        end
+      end
+    end
+  end
+
+  desc "Restart god's child processes"
+  task :restart do
+    on roles(:app) do
+      within release_path do
+        with RAILS_ENV: fetch(:rails_env) do
+          if god_is_running
+            execute :bundle, "exec god load #{config_file}"
+            execute :bundle, "exec god restart"
+          else
+            start_god
+          end
+        end
+      end
+    end
+  end
 end
+
+after "deploy:finished", "god:restart"
