@@ -179,11 +179,13 @@ if __name__ == '__main__':
     amount_rising_count_bp = sys.argv[6] #突破连续成交量放大次数
     close_rising_count_s = sys.argv[7] #买入连续冲高次数
     close_rising_rate_s = sys.argv[8] #冲高回落跌幅
+    json_path = sys.argv[9]
+    data_path = sys.argv[10]
 
-    data = pd.read_csv('./data/' + stock_code + '_' + duration +'.csv', sep='\t', encoding='utf-8', index_col=0)
+    data = pd.read_csv(data_path, sep='\t', encoding='utf-8', index_col=0)
     df = process_data(data)
     # print (df)
-    df.to_csv('tmp.csv', sep='\t', encoding='utf-8')
+    # df.to_csv('tmp.csv', sep='\t', encoding='utf-8')
 
     n = int(close_desceding_x)
     m = float(close_desceding_rate_x)
@@ -242,6 +244,6 @@ if __name__ == '__main__':
                 end_time = mask_df.index.values[-1]
                 j.append({'stock_code': stock_code, 'duration': duration, 'params': {'close_desceding_x': close_desceding_rate_x, 'amount_desceding_x': amount_desceding_x, 'amount_rising_count_bp': amount_rising_count_bp, 'close_rising_count_s': close_rising_count_s, 'close_rising_rate_s': close_rising_rate_s}, 'results': points, 'profit_ratio': profit_ratio, 'begin_time': begin_time, 'end_time': end_time})
 
-    with open('./result.json', 'w') as f:
+    with open(json_path, 'w') as f:
         print (j)
         json.dump(j, f)

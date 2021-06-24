@@ -1,0 +1,2 @@
+class StockAnalyse < ApplicationRecord
+end
