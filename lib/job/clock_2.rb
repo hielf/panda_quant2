@@ -19,12 +19,55 @@ module Clockwork
     return if (current_time.saturday? || current_time.sunday?)
     return if (current_time > "12:00".to_time && current_time < "13:00".to_time)
     return if (current_time < "9:30".to_time || current_time > "15:00".to_time)
+
     if job == 'minute'
       Rails.logger.warn "minute job start"
+      duration = '1m'
+      stock_lists = UserStockListRel.watching_list_min
+
+      stock_lists.each do |stock_list|
+        stock_code = stock_list.stock_code
+        data = ApplicationController.helpers.jq_data(stock_code, duration, 10)
+
+        if ApplicationController.helpers.csv_row_check(stock_code, duration)
+          if data
+            tmp_file = ApplicationController.helpers.data_to_csv(data, stock_code, duration)
+            file = ApplicationController.helpers.merge_csv(stock_code, duration)
+          end
+        else
+          if data
+            file = ApplicationController.helpers.data_to_csv(data, stock_code, duration, false)
+          end
+        end
+      end
+
     end
 
     if job == 'daily'
       Rails.logger.warn "daily job start"
+      duration = '1d'
+      # get data
+      stock_lists = UserStockListRel.watching_list_daily
+
+      stock_lists.each do |stock_list|
+        stock_code = stock_list.stock_code
+        data = ApplicationController.helpers.jq_data(stock_code, duration, 10)
+
+        if ApplicationController.helpers.csv_row_check(stock_code, duration)
+          if data
+            tmp_file = ApplicationController.helpers.data_to_csv(data, stock_code, duration)
+            file = ApplicationController.helpers.merge_csv(stock_code, duration)
+          end
+        else
+          if data
+            file = ApplicationController.helpers.data_to_csv(data, stock_code, duration, false)
+          end
+        end
+      end
+
+      # find w shape
+
+      # push message
     end
   end
 

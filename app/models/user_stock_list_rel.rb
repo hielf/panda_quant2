@@ -10,4 +10,12 @@ class UserStockListRel < ApplicationRecord
       transition :'有效' => :'过期'
     end
   end
+
+  def self.watching_list_min
+    where(status: "有效").filter_map{|usl| usl.stock_list if usl.user.current_subscribtion.package_type == "高级套餐"}
+  end
+
+  def self.watching_list_daily
+    where(status: "有效").filter_map{|usl| usl.stock_list}
+  end
 end

@@ -13,7 +13,8 @@ class User < ApplicationRecord
   # validates :generate_username_prefix, presence: true, on: :create
 
   def op(type, message)
-    log = op_logs.new(op_type: type, op_message: message.slice(0..255), op_time: Time.now)
+    message = message.slice(0..255) if (message != "" && !message.nil?)
+    log = op_logs.new(op_type: type, op_message: message, op_time: Time.now)
     log.save!
   end
 

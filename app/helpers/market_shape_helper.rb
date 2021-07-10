@@ -7,7 +7,7 @@ module MarketShapeHelper
     close_desceding_rate_x = -0.005 #rand(-0.06..-0.005)
     amount_desceding_x = 2 #rand(1..5)#连续交易量下跌次数
     amount_rising_count_bp = 1 #rand(0..3) #突破连续成交量放大次数
-    close_rising_count_s = 2 #买入连续冲高次数
+    close_rising_count_s = 1 #买入连续冲高次数
     close_rising_rate_s = -0.001 #冲高回落跌幅
 
     json = "#{Rails.root.to_s}/tmp/result/result_#{duration}_#{stock_code}.json"
