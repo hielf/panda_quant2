@@ -106,7 +106,7 @@ module StockListsHelper
   end
 
   def get_all_stock_list
-    array = tushare_stock_list
+    array = ApplicationController.helpers.tushare_stock_list
     array.each do |stock|
       begin
         new_stock = StockList.find_or_initialize_by(stock_code: stock[1])
