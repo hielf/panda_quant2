@@ -12,16 +12,23 @@ module MarketShapeHelper
 
     json = "#{Rails.root.to_s}/tmp/result/result_#{stock_code}_#{duration}.json"
     data_path = "#{Rails.root.to_s}/tmp/data/#{stock_code}_#{duration}.csv"
-    system( "cd #{Rails.root.to_s + '/lib/python/market_shape'} && python3 find_w.py #{stock_code} #{duration} #{close_desceding_x} #{close_desceding_rate_x} #{amount_desceding_x} #{amount_rising_count_bp} #{close_rising_count_s} #{close_rising_rate_s} #{json} #{data_path}" )
-    data = JSON.parse(File.read(json))
-    data.each do |sa|
-      StockAnalysis.create(stock_code: sa["stock_code"],
-        duration: sa["duration"],
-        params: sa["params"],
-        results: sa["results"],
-        profit_ratio: sa["profit_ratio"],
-        begin_time: sa["begin_time"],
-        end_time: sa["end_time"])
+    begin
+      system( "cd #{Rails.root.to_s + '/lib/python/market_shape'} && python3 find_w.py #{stock_code} #{duration} #{close_desceding_x} #{close_desceding_rate_x} #{amount_desceding_x} #{amount_rising_count_bp} #{close_rising_count_s} #{close_rising_rate_s} #{json} #{data_path}" )
+      data = JSON.parse(File.read(json))
+    rescue Exception => e
+      Rails.logger.warn "find_w failed: #{e}"
+    end
+
+    if data
+      data.each do |sa|
+        StockAnalysis.create(stock_code: sa["stock_code"],
+          duration: sa["duration"],
+          params: sa["params"],
+          results: sa["results"],
+          profit_ratio: sa["profit_ratio"],
+          begin_time: sa["begin_time"],
+          end_time: sa["end_time"])
+      end
     end
   end
 

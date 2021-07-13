@@ -39,6 +39,11 @@ def process_data(data):
     if 'id' in df:
         df = df.drop('id', 1)
 
+    if 'amount' in df:
+        pass
+    else:
+        df['amount'] = df['volume']
+
     df.insert(0, 'id', np.arange(len(df)))
     close_px = df['close']
     # 收盘价差

@@ -45,34 +45,82 @@ const Message = styled.span`
 
 const Stockanalysis = (props) => {
   const [stockanalysis, setStockanalysis] = useState({})
+  const [quotation, setQuotation] = useState({})
   const [loaded, setLoaded] = useState(false)
 
   useEffect(() => {
-    const url = '/api/packages/' + '10'
+    const url = '/api/stock_lists/stock_analysis_results'
 
-    axios.get(url)
+    axios.get(url, { params: { id: '300' } })
     .then( resp => {
-      setLoaded(true)
+      setStockanalysis(resp.data)
+      const stock_code = resp.data.data.stock_code
+      const duration = resp.data.data.duration
+      const start_time = resp.data.data.begin_time
+      const length = 20
+
+      axios.get('/api/stock_lists/market_quotations', {
+        params: {
+          "stock_code": stock_code,
+          "duration": duration,
+          "start_time": start_time,
+          "length": length,
+        }
+      })
+      .then(resp => {
+        setQuotation(resp.data)
+        setLoaded(true)
+      })
+      .catch(function (error) {
+        console.log(error)
+      })
     } )
     .catch( resp => console.log(resp) )
   }, [])
 
   if (loaded) {
-    const chart = createChart(document.getElementById('chart'), { width: 400, height: 300 })
-    const lineSeries = chart.addLineSeries()
+    // debugger
+    const chart = createChart(document.getElementById('chart'), {
+      width: 600,
+      height: 300,
+    	timeScale: {
+    			timeVisible: true,
+          borderColor: '#D1D4DC',
+    		},
+      rightPriceScale: {
+      	borderColor: '#D1D4DC',
+      },
+       layout: {
+        backgroundColor: '#ffffff',
+        textColor: '#000',
+      },
+      grid: {
+        horzLines: {
+          color: '#F0F3FA',
+        },
+        vertLines: {
+          color: '#F0F3FA',
+        },
+      },
+    })
+    const series = chart.addCandlestickSeries({
+  		upColor: 'rgb(38,166,154)',
+  		downColor: 'rgb(255,82,82)',
+  		wickUpColor: 'rgb(38,166,154)',
+  		wickDownColor: 'rgb(255,82,82)',
+  		borderVisible: false,
+    })
 
-    lineSeries.setData([
-      { time: '2019-04-11', value: 80.01 },
-      { time: '2019-04-12', value: 96.63 },
-      { time: '2019-04-13', value: 76.64 },
-      { time: '2019-04-14', value: 81.89 },
-      { time: '2019-04-15', value: 74.43 },
-      { time: '2019-04-16', value: 80.01 },
-      { time: '2019-04-17', value: 96.63 },
-      { time: '2019-04-18', value: 76.64 },
-      { time: '2019-04-19', value: 81.89 },
-      { time: '2019-04-20', value: 74.43 },
-    ])
+    console.log(quotation.data)
+
+    const data = quotation.data
+    series.setData(data)
+
+    const markers = []
+    markers.push({ time: data[data.length - 1].time, position: 'aboveBar', color: '#e91e63', shape: 'arrowDown', text: '卖出 @ ' + Math.floor(data[data.length - 1].high + 6) })
+    markers.push({ time: data[data.length - 2].time, position: 'belowBar', color: '#2196F3', shape: 'arrowUp', text: '买入 @ ' + Math.floor(data[data.length - 2].low - 6) })
+    markers.push({ time: data[data.length - 3].time, position: 'aboveBar', color: '#f68410', shape: 'circle', text: 'D' })
+    series.setMarkers(markers)
   }
 
   return (

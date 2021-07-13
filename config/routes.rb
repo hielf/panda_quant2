@@ -34,6 +34,7 @@ Rails.application.routes.draw do
       collection do
         get :user_history
         get :market_quotations
+        get :stock_analysis_results
       end
     end
     # match '*path', to: 'root#route_not_found', via: :all

@@ -67,6 +67,7 @@ module Clockwork
 
       # find w shape
       stock_lists.each do |stock_list|
+        stock_code = stock_list.stock_code
         ApplicationController.helpers.find_w(stock_code, duration)
       end
       # push message

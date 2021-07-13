@@ -448,6 +448,22 @@ root_url/api/stock_lists/market_quotations
 
 ***
 
+## 股票监控结果
+
+***
+
+## 调用方式
+* Method: GET
+* Need:
+
+```
+root_url/api/stock_lists/stock_analysis_results
+```
+* 参数: id=1
+* 输出: {"status":0,"message":"获取成功","data":"[[568, 21.25, \"最低点 X\"], [569, 21.29, \"阻力位 Y\"], [570, 21.26, \"支撑位 Z\"], [571, 21.33, \"突破买入 BUY\"]]"}
+
+***
+
 ## 用户研报访问历史
 
 ***

@@ -1,8 +1,18 @@
 class Api::StockListsController < Api::ApplicationController
-  skip_before_action :authenticate_user!, only: [:index, :market_quotations]
+  skip_before_action :authenticate_user!, only: [:index, :market_quotations, :stock_analysis_results]
+
+  def stock_analysis_results
+    m_requires! [:id]
+    stock_analyse = StockAnalyse.find(params[:id])
+    @result = stock_analyse
+
+    render_json([0, '获取成功', @result])
+  end
 
   def market_quotations
     m_requires! [:stock_code, :duration, :start_time, :length]
+
+    # { time: {year: 2018, month: 12, day: 19} , open: 69.97765183896102 , high: 69.97765183896102 , low: 58.73355952507237 , close: 58.73355952507237 }
 
     @result = []
     stock_code = params[:stock_code]
@@ -14,7 +24,13 @@ class Api::StockListsController < Api::ApplicationController
     count = 0
     array.each do |hash|
       if hash["date"] >= start_time
-        @result << hash
+        @result << {"time": {"year":hash["date"].to_datetime.strftime('%Y'),
+                    "month":hash["date"].to_datetime.strftime('%m'),
+                    "day":hash["date"].to_datetime.strftime('%d')},
+                    "open":hash["open"],
+                    "high":hash["high"],
+                    "low":hash["low"],
+                    "close":hash["close"]}
         count = count + 1
       end
       break if count >= length

@@ -182,7 +182,7 @@ if __name__ == '__main__':
     json_path = sys.argv[9]
     data_path = sys.argv[10]
 
-    data = pd.read_csv(data_path, sep='\t', encoding='utf-8', index_col=0)
+    data = pd.read_csv(data_path, sep=',', encoding='utf-8', index_col=0)
     df = process_data(data)
     # print (df)
     # df.to_csv('tmp.csv', sep='\t', encoding='utf-8')
@@ -230,19 +230,19 @@ if __name__ == '__main__':
             print('result: ', b_p_id, flag, b_p)
             points.append([b_p_id, b_p, "突破买入 BUY"])
             print ('find w')
-            s_p_id, s_p = find_S(c, d, b_p_id, df)
-            print('sell: ', s_p_id, s_p)
-            points.append([s_p_id, s_p, "卖出 SELL"])
-            id = s_p_id
+            # s_p_id, s_p = find_S(c, d, b_p_id, df)
+            # print('sell: ', s_p_id, s_p)
+            # points.append([s_p_id, s_p, "卖出 SELL"])
+            # id = s_p_id
+            id = b_p_id
 
-            if s_p_id > b_p_id:
-                mask = ((current_df['id'] >= x_id - n) & (current_df['id'] <= s_p_id))
-                mask_df = current_df.loc[mask]
-                profit_ratio = round((s_p - b_p) / b_p, 4)
-                print ('profit_ratio', profit_ratio)
-                begin_time = mask_df.index.values[0]
-                end_time = mask_df.index.values[-1]
-                j.append({'stock_code': stock_code, 'duration': duration, 'params': {'close_desceding_x': close_desceding_rate_x, 'amount_desceding_x': amount_desceding_x, 'amount_rising_count_bp': amount_rising_count_bp, 'close_rising_count_s': close_rising_count_s, 'close_rising_rate_s': close_rising_rate_s}, 'results': points, 'profit_ratio': profit_ratio, 'begin_time': begin_time, 'end_time': end_time})
+            mask = ((current_df['id'] >= x_id - n) & (current_df['id'] <= b_p_id))
+            mask_df = current_df.loc[mask]
+            profit_ratio = 0
+            print ('profit_ratio', profit_ratio)
+            begin_time = mask_df.index.values[0]
+            end_time = mask_df.index.values[-1]
+            j.append({'stock_code': stock_code, 'duration': duration, 'params': {'close_desceding_x': close_desceding_rate_x, 'amount_desceding_x': amount_desceding_x, 'amount_rising_count_bp': amount_rising_count_bp, 'close_rising_count_s': close_rising_count_s, 'close_rising_rate_s': close_rising_rate_s}, 'results': points, 'profit_ratio': profit_ratio, 'begin_time': begin_time, 'end_time': end_time})
 
     with open(json_path, 'w') as f:
         print (j)
