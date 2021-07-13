@@ -411,6 +411,43 @@ root_url/api/stock_lists
 
 ***
 
+## 股票行情
+
+***
+
+## 调用方式
+* Method: GET
+* Need:
+
+```
+root_url/api/stock_lists/market_quotations
+```
+* 参数: stock_code=600060, duration=1m, start_time='2021-07-09 14:51:00', length=10
+* 输出: {"status": 0,"message": "获取成功",
+    "data": [
+        {
+            "date": "2021-07-09 14:51:00",
+            "open": "21.29",
+            "high": "21.3",
+            "low": "21.27",
+            "close": "21.28",
+            "volume": "203000.0",
+            "money": "4321647.0"
+        },
+        {
+            "date": "2021-07-09 14:52:00",
+            "open": "21.27",
+            "high": "21.28",
+            "low": "21.26",
+            "close": "21.27",
+            "volume": "213200.0",
+            "money": "4534193.0"
+        }
+    ]
+}
+
+***
+
 ## 用户研报访问历史
 
 ***

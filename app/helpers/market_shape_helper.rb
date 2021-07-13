@@ -10,7 +10,7 @@ module MarketShapeHelper
     close_rising_count_s = 1 #买入连续冲高次数
     close_rising_rate_s = -0.001 #冲高回落跌幅
 
-    json = "#{Rails.root.to_s}/tmp/result/result_#{duration}_#{stock_code}.json"
+    json = "#{Rails.root.to_s}/tmp/result/result_#{stock_code}_#{duration}.json"
     data_path = "#{Rails.root.to_s}/tmp/data/#{stock_code}_#{duration}.csv"
     system( "cd #{Rails.root.to_s + '/lib/python/market_shape'} && python3 find_w.py #{stock_code} #{duration} #{close_desceding_x} #{close_desceding_rate_x} #{amount_desceding_x} #{amount_rising_count_bp} #{close_rising_count_s} #{close_rising_rate_s} #{json} #{data_path}" )
     data = JSON.parse(File.read(json))
