@@ -39,32 +39,38 @@ import dateutil.parser
 def find_X(n, m, p, df):
     id = 0
     bottom_price = 0
+    x_time = ""
     for (i, r) in df.iterrows():
         id = int(r.id)
         if (r.close_desceding_count >= n and r.amount_desceding_count >= p and r.close_desceding_rate < m):
             # print ("close_desceding_count:", r.close_desceding_count, "amount_desceding_count:", r.amount_desceding_count, "close_desceding_count:", r.close_desceding_count, "close_desceding_rate:", r.close_desceding_rate)
             bottom_price = r.close
+            x_time = df.loc[df['id'] == id].index[0]
             X = df.loc[df['id'] == (r.id + 1)]
             if (df.id == (r.id + 1)).any():
                 if (X.close_desceding_status.values[0] == False):
                     # print (i, r.id, bottom_price, r.close_desceding_count, r.close_desceding_rate)
                     break
-    return id, bottom_price
+
+    return id, bottom_price, x_time
 
 # 向上回调
 def find_Y(x_id, df):
     id = 0
     resistant_price = 0
+    y_time = ''
     mask = df['id'] > x_id
     for i, r in df.loc[mask].iterrows():
         id = int(r.id)
         resistant_price = r.close
+        y_time = df.loc[df['id'] == id].index[0]
         Y = df.loc[df['id'] == (r.id + 1)]
         if (df.id == (r.id + 1)).any():
             if (Y.close_rising_status.values[0] == False):
     #             print (Y.id, resistant_price)
                 break
-    return id, resistant_price
+
+    return id, resistant_price, y_time
 
 # 再次向下调整
 def find_Z(y_id, resistant_price, bottom_price, df):
@@ -73,11 +79,13 @@ def find_Z(y_id, resistant_price, bottom_price, df):
     second_bottom_price = 0
     id = 0
     count = 1
+    z_time = ''
     for i, r in df.loc[mask].iterrows():
         current_bottom_price = r.close
         Z = df.loc[df['id'] == (r.id - 1)]
         if (df.id == (r.id - 1)).any():
             second_bottom_price = float(Z.close)
+            z_time = df.loc[df['id'] == (r.id - 1)].index[0]
 #             print (i, int(Z.id), second_bottom_price, resistant_price)
             if count >= 3:
                 flag = False
@@ -91,7 +99,8 @@ def find_Z(y_id, resistant_price, bottom_price, df):
                 id = int(Z.id)
                 break
         count = count + 1
-    return id, flag, second_bottom_price
+
+    return id, flag, second_bottom_price, z_time
 
 # 向上回拉，创新高
 # 连续成交量放大 q
@@ -100,19 +109,23 @@ def find_buy_point(run_flag, z_id, resistant_price, df, q):
     flag = False
     buy_price = 0
     id = z_id
+    b_time = ''
     if run_flag == False:
-        return id, flag, buy_price
+        return id, flag, buy_price, b_time
     for i, r in df.loc[mask].iterrows():
         buy_price = r.high
         if r.close_rising_status == False:
             id = int(r.id)
+            b_time = df.loc[df['id'] == id].index[0]
             break
         if (buy_price > resistant_price and r.amount_rising_count > q):
             # print ("amount_rising_count:", r.amount_rising_count)
             flag = True
             id = int(r.id)
+            b_time = df.loc[df['id'] == id].index[0]
             break
-    return id, flag, buy_price
+
+    return id, flag, buy_price, b_time
 
 # 冲高回落
 # 连续上涨 c  or  出现回落
@@ -201,34 +214,34 @@ if __name__ == '__main__':
         points = []
         current_df = market_df.drop(market_df[market_df.id < id].index)
 
-        x_id, bottom_price = find_X(n, m, p, current_df)
+        x_id, bottom_price, x_time = find_X(n, m, p, current_df)
         id = x_id
         if bottom_price == 0 and id == 0:
             break
 
-        y_id, r_p = find_Y(x_id, current_df)
+        y_id, r_p, y_time = find_Y(x_id, current_df)
         id = y_id
         if r_p == 0 and id == 0:
             break
 
-        z_id, z_flag, s_b_p = find_Z(y_id, r_p, bottom_price, current_df)
+        z_id, z_flag, s_b_p, z_time = find_Z(y_id, r_p, bottom_price, current_df)
         id = z_id
         if s_b_p == 0 and id == 0:
             break
 
-        b_p_id, flag, b_p = find_buy_point(z_flag, z_id, r_p, current_df, q)
+        b_p_id, flag, b_p, b_time = find_buy_point(z_flag, z_id, r_p, current_df, q)
         id = b_p_id
 
         net = 0
         if flag == True:
             print('hit bottom', x_id, bottom_price)
-            points.append([x_id, bottom_price, "最低点 X"])
+            points.append([x_id, bottom_price, "起始位 X", x_time])
             print('hit resistant', y_id, r_p)
-            points.append([y_id, r_p, "阻力位 Y"])
+            points.append([y_id, r_p, "阻力位 Y", y_time])
             print('hit second bottom', z_id, z_flag, s_b_p)
-            points.append([z_id, s_b_p, "支撑位 Z"])
+            points.append([z_id, s_b_p, "支撑位 Z", z_time])
             print('result: ', b_p_id, flag, b_p)
-            points.append([b_p_id, b_p, "突破买入 BUY"])
+            points.append([b_p_id, b_p, "突破买入 BUY", b_time])
             print ('find w')
             # s_p_id, s_p = find_S(c, d, b_p_id, df)
             # print('sell: ', s_p_id, s_p)

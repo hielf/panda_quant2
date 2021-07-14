@@ -57,7 +57,7 @@ const Stockanalysis = (props) => {
       const stock_code = resp.data.data.stock_code
       const duration = resp.data.data.duration
       const start_time = resp.data.data.begin_time
-      const length = 20
+      const length = 12
 
       axios.get('/api/stock_lists/market_quotations', {
         params: {
@@ -80,8 +80,9 @@ const Stockanalysis = (props) => {
 
   if (loaded) {
     // debugger
+    const canvas = document.getElementById('chart')
     const chart = createChart(document.getElementById('chart'), {
-      width: 600,
+      width: canvas.offsetWidth,
       height: 300,
     	timeScale: {
     			timeVisible: true,
@@ -89,6 +90,10 @@ const Stockanalysis = (props) => {
     		},
       rightPriceScale: {
       	borderColor: '#D1D4DC',
+        scaleMargins: {
+    			top: 0.1,
+    			bottom: 0.1,
+    		},
       },
        layout: {
         backgroundColor: '#ffffff',
@@ -103,6 +108,9 @@ const Stockanalysis = (props) => {
         },
       },
     })
+
+    chart.timeScale().fitContent()
+
     const series = chart.addCandlestickSeries({
   		upColor: 'rgb(38,166,154)',
   		downColor: 'rgb(255,82,82)',
@@ -111,15 +119,23 @@ const Stockanalysis = (props) => {
   		borderVisible: false,
     })
 
-    console.log(quotation.data)
+    // console.log(quotation.data)
+    console.log(stockanalysis.data)
+    // debugger
 
     const data = quotation.data
     series.setData(data)
 
     const markers = []
-    markers.push({ time: data[data.length - 1].time, position: 'aboveBar', color: '#e91e63', shape: 'arrowDown', text: '卖出 @ ' + Math.floor(data[data.length - 1].high + 6) })
-    markers.push({ time: data[data.length - 2].time, position: 'belowBar', color: '#2196F3', shape: 'arrowUp', text: '买入 @ ' + Math.floor(data[data.length - 2].low - 6) })
-    markers.push({ time: data[data.length - 3].time, position: 'aboveBar', color: '#f68410', shape: 'circle', text: 'D' })
+    markers.push({ time: stockanalysis.data.begin_time, position: 'belowBar', color: '#2196F3', shape: 'arrowUp', text: JSON.parse(stockanalysis.data.results)[0][2] + ' @ ' + JSON.parse(stockanalysis.data.results)[0][1] })
+    markers.push({ time: data[JSON.parse(stockanalysis.data.results)[1][0] - JSON.parse(stockanalysis.data.results)[0][0]].time, position: 'aboveBar', color: '#f68410', shape: 'circle', text: JSON.parse(stockanalysis.data.results)[1][2] })
+    markers.push({ time: data[JSON.parse(stockanalysis.data.results)[1][0] - JSON.parse(stockanalysis.data.results)[0][0] + JSON.parse(stockanalysis.data.results)[2][0] - JSON.parse(stockanalysis.data.results)[1][0]].time, position: 'belowBar', color: '#f68410', shape: 'circle', text: JSON.parse(stockanalysis.data.results)[2][2] })
+    markers.push({ time: stockanalysis.data.end_time, position: 'aboveBar', color: '#e91e63', shape: 'arrowDown', text: JSON.parse(stockanalysis.data.results)[3][2] + ' @ ' + JSON.parse(stockanalysis.data.results)[3][1] })
+
+
+    // markers.push({ time: data[data.length - 4].time, position: 'aboveBar', color: '#e91e63', shape: 'arrowDown', text: '卖出 @ ' + Math.floor(data[data.length - 4].high ) })
+    // markers.push({ time: data[data.length - 6].time, position: 'belowBar', color: '#2196F3', shape: 'arrowUp', text: '买入 @ ' + Math.floor(data[data.length - 6].low ) })
+
     series.setMarkers(markers)
   }
 

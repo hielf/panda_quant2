@@ -22,8 +22,14 @@ class Api::StockListsController < Api::ApplicationController
     file = Rails.root.to_s + "/tmp/data/#{stock_code}_#{duration}.csv"
     array = CSV.parse(File.read(file), headers: true).map {|row| row.to_h }
     count = 0
+
+    before = 7.minutes
+    if start_time.to_time.hour == 0
+      before = 5.days
+    end
+
     array.each do |hash|
-      if hash["date"] >= start_time
+      if hash["date"].to_datetime >= start_time.to_datetime - before
         @result << {"time": {"year":hash["date"].to_datetime.strftime('%Y'),
                     "month":hash["date"].to_datetime.strftime('%m'),
                     "day":hash["date"].to_datetime.strftime('%d')},
