@@ -113,7 +113,7 @@ def find_buy_point(run_flag, z_id, resistant_price, df, q):
     if run_flag == False:
         return id, flag, buy_price, b_time
     for i, r in df.loc[mask].iterrows():
-        buy_price = r.high
+        buy_price = r.close
         if r.close_rising_status == False:
             id = int(r.id)
             b_time = df.loc[df['id'] == id].index[0]

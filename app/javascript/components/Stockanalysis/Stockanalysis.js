@@ -51,13 +51,13 @@ const Stockanalysis = (props) => {
   useEffect(() => {
     const url = '/api/stock_lists/stock_analysis_results'
 
-    axios.get(url, { params: { id: '300' } })
+    axios.get(url, { params: { id: '400' } })
     .then( resp => {
       setStockanalysis(resp.data)
       const stock_code = resp.data.data.stock_code
       const duration = resp.data.data.duration
       const start_time = resp.data.data.begin_time
-      const length = 12
+      const length = 40
 
       axios.get('/api/stock_lists/market_quotations', {
         params: {
@@ -83,7 +83,7 @@ const Stockanalysis = (props) => {
     const canvas = document.getElementById('chart')
     const chart = createChart(document.getElementById('chart'), {
       width: canvas.offsetWidth,
-      height: 300,
+      height: 400,
     	timeScale: {
     			timeVisible: true,
           borderColor: '#D1D4DC',
@@ -127,10 +127,10 @@ const Stockanalysis = (props) => {
     series.setData(data)
 
     const markers = []
-    markers.push({ time: stockanalysis.data.begin_time, position: 'belowBar', color: '#2196F3', shape: 'arrowUp', text: JSON.parse(stockanalysis.data.results)[0][2] + ' @ ' + JSON.parse(stockanalysis.data.results)[0][1] })
-    markers.push({ time: data[JSON.parse(stockanalysis.data.results)[1][0] - JSON.parse(stockanalysis.data.results)[0][0]].time, position: 'aboveBar', color: '#f68410', shape: 'circle', text: JSON.parse(stockanalysis.data.results)[1][2] })
-    markers.push({ time: data[JSON.parse(stockanalysis.data.results)[1][0] - JSON.parse(stockanalysis.data.results)[0][0] + JSON.parse(stockanalysis.data.results)[2][0] - JSON.parse(stockanalysis.data.results)[1][0]].time, position: 'belowBar', color: '#f68410', shape: 'circle', text: JSON.parse(stockanalysis.data.results)[2][2] })
-    markers.push({ time: stockanalysis.data.end_time, position: 'aboveBar', color: '#e91e63', shape: 'arrowDown', text: JSON.parse(stockanalysis.data.results)[3][2] + ' @ ' + JSON.parse(stockanalysis.data.results)[3][1] })
+    markers.push({ time: JSON.parse(stockanalysis.data.results)[0][3], position: 'belowBar', color: '#2196F3', shape: 'arrowUp', text: JSON.parse(stockanalysis.data.results)[0][2] + ' @ ' + JSON.parse(stockanalysis.data.results)[0][1] })
+    markers.push({ time: JSON.parse(stockanalysis.data.results)[1][3], position: 'aboveBar', color: '#f68410', shape: 'circle', text: JSON.parse(stockanalysis.data.results)[1][2] })
+    markers.push({ time: JSON.parse(stockanalysis.data.results)[2][3], position: 'belowBar', color: '#f68410', shape: 'circle', text: JSON.parse(stockanalysis.data.results)[2][2] })
+    markers.push({ time: JSON.parse(stockanalysis.data.results)[3][3], position: 'aboveBar', color: '#e91e63', shape: 'arrowDown', text: JSON.parse(stockanalysis.data.results)[3][2] + ' @ ' + JSON.parse(stockanalysis.data.results)[3][1] })
 
 
     // markers.push({ time: data[data.length - 4].time, position: 'aboveBar', color: '#e91e63', shape: 'arrowDown', text: '卖出 @ ' + Math.floor(data[data.length - 4].high ) })
