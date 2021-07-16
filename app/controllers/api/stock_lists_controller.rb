@@ -23,20 +23,30 @@ class Api::StockListsController < Api::ApplicationController
     array = CSV.parse(File.read(file), headers: true).map {|row| row.to_h }
     count = 0
 
-    before = 7.minutes
+    before = 3.minutes
     if start_time.to_time.hour == 0
-      before = 5.days
+      before = 3.days
     end
 
     array.each do |hash|
-      if hash["date"].to_datetime >= start_time.to_datetime - before
-        @result << {"time": {"year":hash["date"].to_datetime.strftime('%Y'),
-                    "month":hash["date"].to_datetime.strftime('%m'),
-                    "day":hash["date"].to_datetime.strftime('%d')},
-                    "open":hash["open"],
-                    "high":hash["high"],
-                    "low":hash["low"],
-                    "close":hash["close"]}
+      if "#{hash['date']}+08:00".to_datetime >= start_time.to_datetime - before
+        if duration == "1d"
+          @result << {"time": {"year":hash['date'].to_datetime.strftime('%Y'),
+                      "month":hash['date'].to_datetime.strftime('%m'),
+                      "day":hash['date'].to_datetime.strftime('%d')},
+                      "open":hash["open"],
+                      "high":hash["high"],
+                      "low":hash["low"],
+                      "close":hash["close"]}
+        elsif duration == "1m"
+          p "#{hash['date']}+08:00".to_datetime
+          @result << {"time":hash['date'].to_datetime.to_i,
+                      "open":hash["open"],
+                      "high":hash["high"],
+                      "low":hash["low"],
+                      "close":hash["close"]}
+        end
+
         count = count + 1
       end
       break if count >= length
