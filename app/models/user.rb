@@ -7,6 +7,7 @@ class User < ApplicationRecord
   has_many :user_stock_list_rels
   has_many :stock_lists, :through => :user_stock_list_rels
   has_many :op_logs, dependent: :destroy
+  has_many :push_notifications, dependent: :destroy
 
   # validates :openid, uniqueness: true, on: :create
   # validates :password, presence: true, length: {minimum: 6, maximum: 32}, format: {with: /\A[\x21-\x7e]+\Z/i, message: '密码至少6位'}, on: :create

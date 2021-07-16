@@ -2,6 +2,8 @@ module MarketShapeHelper
   # ApplicationController.helpers.find_w
   def find_w(stock_code, duration)
     # python find_w.py 110044.SH 1min 2 -0.005 0 3 2 -0.001
+    find_w_flag = false
+
     if duration == '1m'
       close_desceding_x = 2 #rand(1..5)
       close_desceding_rate_x = -0.005 #rand(-0.06..-0.005)
@@ -41,13 +43,19 @@ module MarketShapeHelper
               begin_time: sa["begin_time"],
               end_time: sa["end_time"],
               stock_display_name: stock_list.stock_display_name)
-            stock_analyse.save if stock_analyse
+              
+            if stock_analyse
+              stock_analyse.save
+              find_w_flag = stock_analyse
+            end
           end
         rescue Exception => e
           Rails.logger.warn "find_w failed: #{e}"
         end
       end
     end
+
+    return find_w_flag
   end
 
   def results_to_csv

@@ -11,7 +11,6 @@ class Api::StockListsController < Api::ApplicationController
 
   def market_quotations
     m_requires! [:stock_code, :duration, :start_time, :length]
-
     # { time: {year: 2018, month: 12, day: 19} , open: 69.97765183896102 , high: 69.97765183896102 , low: 58.73355952507237 , close: 58.73355952507237 }
 
     @result = []

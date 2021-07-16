@@ -23,66 +23,19 @@ module Clockwork
     if job == 'minute'
       Rails.logger.warn "minute job start"
       duration = '1m'
-      stock_lists = UserStockListRel.watching_list_min
-
-      stock_lists.each do |stock_list|
-        stock_code = stock_list.stock_code
-        data = ApplicationController.helpers.jq_data(stock_code, duration, 10)
-
-        if ApplicationController.helpers.csv_row_check(stock_code, duration)
-          if data
-            tmp_file = ApplicationController.helpers.data_to_csv(data, stock_code, duration)
-            file = ApplicationController.helpers.merge_csv(stock_code, duration)
-          end
-        else
-          if data
-            file = ApplicationController.helpers.data_to_csv(data, stock_code, duration, false)
-          end
-        end
-      end
-
-      stock_lists.each do |stock_list|
-        stock_code = stock_list.stock_code
-        ApplicationController.helpers.find_w(stock_code, duration)
-      end
 
     end
 
     if job == 'daily'
       Rails.logger.warn "daily job start"
       duration = '1d'
-      # get data
-      stock_lists = UserStockListRel.watching_list_daily
-
-      stock_lists.each do |stock_list|
-        stock_code = stock_list.stock_code
-        data = ApplicationController.helpers.jq_data(stock_code, duration, 10)
-
-        if ApplicationController.helpers.csv_row_check(stock_code, duration)
-          if data
-            tmp_file = ApplicationController.helpers.data_to_csv(data, stock_code, duration)
-            file = ApplicationController.helpers.merge_csv(stock_code, duration)
-          end
-        else
-          if data
-            file = ApplicationController.helpers.data_to_csv(data, stock_code, duration, false)
-          end
-        end
-      end
-
-      # find w shape
-      stock_lists.each do |stock_list|
-        stock_code = stock_list.stock_code
-        ApplicationController.helpers.find_w(stock_code, duration)
-      end
-      # push message
-    end
+    
   end
 
   # every(1.minute, 'recommend.quotes', :thread => false)
   every(1.minute, 'minute', :thread => true)
-  every(1.day, 'daily', :at => '10:00', :thread => true)
-  every(1.day, 'daily', :at => '14:30', :thread => true)
+  every(1.day, 'daily', :at => '10:05', :thread => true)
+  every(1.day, 'daily', :at => '14:35', :thread => true)
   # every(1.minute, 'timing', :skip_first_run => true, :thread => true)
   # every(1.hour, 'hourly.job')
 end
