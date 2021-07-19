@@ -29,7 +29,8 @@ module Clockwork
     if job == 'daily'
       Rails.logger.warn "daily job start"
       duration = '1d'
-    
+      
+    end
   end
 
   # every(1.minute, 'recommend.quotes', :thread => false)
