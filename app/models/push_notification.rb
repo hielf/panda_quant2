@@ -1,5 +1,7 @@
 class PushNotification < ApplicationRecord
   validates_lengths_from_database
+  belongs_to :user
+  belongs_to :stock_analyse
 
   state_machine :status, :initial => :'未发送' do
     event :sent do

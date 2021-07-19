@@ -1,0 +1,23 @@
+template:
+  template_id: "xJabLi0xvoIG4zQOWvYJNN1kVg13M6uVdtmHvhH1ICE"
+  url: "*url"
+  topcolor: "#FF0000"
+  data:
+    first:
+      value: "*first"
+      color: "#0A0A0A"
+    keyword1:
+      value: "*keyword1"
+      color: "#0A0A0A"
+    keyword2:
+      value: "*keyword2"
+      color: "#0A0A0A"
+    keyword3:
+      value: "*keyword3"
+      color: "#0A0A0A"
+    keyword4:
+      value: "*keyword4"
+      color: "#0A0A0A"
+    remark:
+      value: "*remark"
+      color: "#F85959"
