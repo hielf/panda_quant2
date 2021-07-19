@@ -11,11 +11,30 @@ class WechatsController < ApplicationController
     if user.save!
       user.update(nickname: nickname, avatar: avatar)
     end
+    url = "https://pandaapi.ripple-tech.com/api/packages/new_user_package?openid=#{openid}"
     wechat.custom_message_send Wechat::Message.to(openid).text("欢迎关注本工具:\na)我们为您实时扫描订阅的证券行情\nb)在W形态买入点出现时向您发出通知")
-    wechat.custom_message_send Wechat::Message.to(openid).text("更多使用说明请浏览【帮助】")
+    wechat.custom_message_send Wechat::Message.to(openid).text("请按<a href='#{url}'>【这里】</a>获取免费5个交易日的新用户礼包\n包含沪深300成份股票的日线级别提醒")
 
     request.reply.success
     user.op("event", "subscribe") if user
+  end
+
+  #new user package
+  on :click, with: 'NEWUSER' do |request, key|
+    openid = request[:FromUserName]
+    new_user = Wechat.api.user openid
+    nickname = new_user["nickname"]
+    avatar = new_user["headimgurl"]
+    user = User.find_or_initialize_by(openid: openid)
+    if user.save!
+      user.update(nickname: nickname, avatar: avatar)
+    end
+    url = "https://pandaapi.ripple-tech.com/api/packages/new_user_package?openid=#{openid}"
+
+    wechat.custom_message_send Wechat::Message.to(openid).text("请按<a href='#{url}'>【这里】</a>获取免费5个交易日的新用户礼包\n包含沪深300成份股票的日线级别提醒")
+
+    request.reply.success
+    user.op("click", "newuser") if user
   end
 
   # 验证手机号

@@ -49,23 +49,23 @@ class Api::PackagesController < Api::ApplicationController
   def new_user_package
     begin
       package = Package.find_by(package_type: "新手礼包")
-      result = [1, '订阅失败', nil]
+      result = '领取失败'
       current_user = User.find_by(openid: params[:openid]) if !params[:openid].to_s.blank?
 
       if had_subscribtion?(package)
-        result = [1, '您已使用过新用户礼包福利', nil]
+        result = '很抱歉，您已领取过新用户礼包福利'
       else
         Subscribtion.transaction do
           start_date = Date.today
           end_date = start_date + package.date_num
           current_user.subscribtions.create!(start_date: start_date, end_date: end_date, package_type: package.package_type, watch_num: package.watch_num, note:package.desc)
         end
-        result = [0, '新用户礼包订阅成功', order]
+        result = "新用户礼包领取成功，您将在5个交易日内任意沪深300成份股票出现W形态买点时获得提醒"
       end
     rescue Exception => ex
-      result= [1, ex.message, nil]
+      result= ex.message
     end
-    render_json(result)
+    Wechat.api.custom_message_send Wechat::Message.to(params[:openid]).text(result)
   end
 
   private
