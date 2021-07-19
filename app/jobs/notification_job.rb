@@ -1,7 +1,7 @@
 class NotificationJob < ApplicationJob
   queue_as :push_notifications
 
-  after_perform :sent
+  after_perform :sms
 
   def perform(*args)
     @id = args[0]
@@ -32,7 +32,7 @@ class NotificationJob < ApplicationJob
   end
 
   private
-  def sent
+  def sms
     begin
       mobile = @notification.user.mobile
       stock_code = @notification.stock_code
