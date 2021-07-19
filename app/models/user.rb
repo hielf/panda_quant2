@@ -24,6 +24,10 @@ class User < ApplicationRecord
     return log.op_type, log.op_message
   end
 
+  def had_subscribtion?(package)
+    subscribtions.find_by(package_type: package.package_type)
+  end
+
   def current_subscribtion
     subscribtions.find_by("start_date <= ? AND end_date >= ?", Date.today, Date.today)
   end

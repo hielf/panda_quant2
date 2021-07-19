@@ -51,6 +51,13 @@ module Clockwork
         StockAnalyseJob.perform_later stock_code, duration
       end
 
+      #新用户礼包
+      data = ApplicationController.helpers.jq_index_stocks_http("000300.XSHG")
+      stock_lists = CSV.parse(data)
+      stock_lists.each do |stock_list|
+        stock_code = stock_list[0][0..5]
+        StockAnalyseJob.perform_later stock_code, duration
+      end
     end
   end
 

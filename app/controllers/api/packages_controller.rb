@@ -1,5 +1,5 @@
 class Api::PackagesController < Api::ApplicationController
-  skip_before_action :authenticate_user!, only: [:index, :show, :subscribe]
+  skip_before_action :authenticate_user!, only: [:index, :show, :subscribe, :new_user_package]
 
   def create
     m_requires! [:title, :period, :market_price, :discount, :real_price, :package_type, :desc]
@@ -39,6 +39,28 @@ class Api::PackagesController < Api::ApplicationController
         if order.save!
           result = [0, '订阅下单成功', order]
         end
+      end
+    rescue Exception => ex
+      result= [1, ex.message, nil]
+    end
+    render_json(result)
+  end
+
+  def new_user_package
+    begin
+      package = Package.find_by(package_type: "新手礼包")
+      result = [1, '订阅失败', nil]
+      current_user = User.find_by(openid: params[:openid]) if !params[:openid].to_s.blank?
+
+      if had_subscribtion?(package)
+        result = [1, '您已使用过新用户礼包福利', nil]
+      else
+        Subscribtion.transaction do
+          start_date = Date.today
+          end_date = start_date + package.date_num
+          current_user.subscribtions.create!(start_date: start_date, end_date: end_date, package_type: package.package_type, watch_num: package.watch_num, note:package.desc)
+        end
+        result = [0, '新用户礼包订阅成功', order]
       end
     rescue Exception => ex
       result= [1, ex.message, nil]

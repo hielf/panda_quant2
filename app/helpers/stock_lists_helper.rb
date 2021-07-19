@@ -2,6 +2,53 @@ require 'pycall/import'
 include PyCall::Import
 module StockListsHelper
 
+  def jq_http_request(data)
+    uri = URI.parse("https://dataapi.joinquant.com/apis")
+    https = Net::HTTP.new(uri.host,uri.port)
+    https.use_ssl = true
+    req = Net::HTTP::Post.new(uri.path, {'Content-Type' =>'application/json'})
+    req.body = data
+    res = https.request(req)
+    return res.body
+  end
+
+  def jq_auth_http
+    body = {
+        "method" => "get_token",
+        "mob" => ENV['jq_data_username'],
+        "pwd" => ENV['jq_data_password']
+    }.to_json
+    token = ApplicationController.helpers.jq_http_request(body)
+    return token
+  end
+
+  def jq_data_bar_http(stock_code, duration, row)
+    token = ApplicationController.helpers.jq_auth_http
+    body = {
+        "method" => "get_bars_period",
+        "token" => token,
+        "code" => "600050.XSHG",
+        "unit" => duration,
+        "date" => "2021-05-04 09:45:00",
+        "end_date" => "2021-06-04 10:40:00",
+        "fq_ref_date" => ""
+    }.to_json
+    data = ApplicationController.helpers.jq_http_request(body)
+    return data
+  end
+
+  def jq_index_stocks_http(stock_code)
+    token = ApplicationController.helpers.jq_auth_http
+    body = {
+        "method" => "get_index_stocks",
+        "token" => token,
+        "code" => stock_code,
+        "date" => Date.today.strftime('%Y-%m-%d')
+    }.to_json
+    data = ApplicationController.helpers.jq_http_request(body)
+    return data
+  end
+
   def jq_auth
     pyimport 'jqdatasdk'
     jqdatasdk.auth(ENV['jq_data_username'], ENV['jq_data_password'])
@@ -41,7 +88,13 @@ module StockListsHelper
     end
 
     begin
-      data.to_csv(path_or_buf: "#{file}", index: false)
+      if data.class == Object
+        data.to_csv(path_or_buf: "#{file}", index: false)
+      else
+        File.open(file, 'w') do |f|
+          f.write(data)
+        end
+      end
     rescue Exception => e
       file = false
       Rails.logger.warn "data_to_csv failed: #{e}"
