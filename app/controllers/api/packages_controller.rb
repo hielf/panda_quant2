@@ -52,7 +52,7 @@ class Api::PackagesController < Api::ApplicationController
       result = '领取失败'
       current_user = User.find_by(openid: params[:openid]) if !params[:openid].to_s.blank?
 
-      if had_subscribtion?(package)
+      if current_user.had_subscribtion?(package)
         result = '很抱歉，您已领取过新用户礼包福利'
       else
         Subscribtion.transaction do
