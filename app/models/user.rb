@@ -9,6 +9,14 @@ class User < ApplicationRecord
   has_many :op_logs, dependent: :destroy
   has_many :push_notifications, dependent: :destroy
 
+  # has_many :vaild_stock_lists, :through => :user_stock_list_rels,
+  #   -> { where(user_stock_list_rels: {status: "有效"}) }
+  # has_many :vaild_stock_lists, through: :user_stock_list_rels, -> {where('user_stock_list_rels.status' => "有效")}
+  has_many :vaild_stock_list_rels, -> { vaild }, :class_name => 'UserStockListRel'
+  has_many :tryout_stock_list_rels, -> { tryout }, :class_name => 'UserStockListRel'
+  has_many :vaild_stock_lists, :source => :stock_list, :through => :vaild_stock_list_rels
+  has_many :tryout_stock_lists, :source => :stock_list, :through => :tryout_stock_list_rels
+
   # validates :openid, uniqueness: true, on: :create
   # validates :password, presence: true, length: {minimum: 6, maximum: 32}, format: {with: /\A[\x21-\x7e]+\Z/i, message: '密码至少6位'}, on: :create
   # validates :generate_username_prefix, presence: true, on: :create
@@ -33,11 +41,16 @@ class User < ApplicationRecord
   end
 
   def subscribing?(stock_list)
-    user_stock_list_rels.find_by(stock_list_id: stock_list.id)
+    user_stock_list_rels.find_by(stock_list_id: stock_list.id, status: "有效")
   end
 
   def subscribe!(stock_list)
     s = user_stock_list_rels.find_or_initialize_by(stock_list_id: stock_list.id)
+    s.save!
+  end
+
+  def tryout!(stock_list)
+    s = user_stock_list_rels.find_or_initialize_by(stock_list_id: stock_list.id, status: '试用')
     s.save!
   end
 

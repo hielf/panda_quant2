@@ -22,15 +22,56 @@ module StockListsHelper
     return token
   end
 
+  def normalize_code_jq(stock_code)
+    jq_stock_code = false
+    stock_list = StockList.find_by(stock_code: stock_code)
+    if stock_list
+      jq_stock_code =
+      case stock_list.market_code
+      when "sh"
+        ".XSHG"
+      when "sz"
+        ".XSHE"
+      end
+    end
+    return jq_stock_code
+  end
+
+  def jq_from_date(duration, row)
+    current_time = Time.now
+    end_date = current_time.strftime("%Y-%m-%d %H:%M:%S")
+    date =
+    case duration
+    when '1d'
+      (current_time - row.days).strftime("%Y-%m-%d %H:%M:%S")
+    when '1m'
+      if (current_time < "9:30".to_time || current_time > "15:00".to_time)
+        if current_time > "00:00".to_time
+          ((current_time - 1.days).change({ hour: 15, min: 0, sec: 0 }) - row.minutes).strftime("%Y-%m-%d %H:%M:%S")
+        else
+          (current_time.change({ hour: 15, min: 0, sec: 0 }) - row.minutes).strftime("%Y-%m-%d %H:%M:%S")
+        end
+      elsif (current_time > "11:30".to_time && current_time < "13:00".to_time)
+        (current_time.change({ hour: 11, min: 30, sec: 0 }) - row.minutes).strftime("%Y-%m-%d %H:%M:%S")
+      else
+        (current_time - row.minutes).strftime("%Y-%m-%d %H:%M:%S")
+      end
+    end
+
+    return date, end_date
+  end
+
   def jq_data_bar_http(stock_code, duration, row)
+    stock_code = stock_code + ApplicationController.helpers.normalize_code_jq(stock_code)
+    date, end_date = ApplicationController.helpers.jq_from_date(duration, row)
     token = ApplicationController.helpers.jq_auth_http
     body = {
         "method" => "get_bars_period",
         "token" => token,
-        "code" => "600050.XSHG",
+        "code" => stock_code,
         "unit" => duration,
-        "date" => "2021-05-04 09:45:00",
-        "end_date" => "2021-06-04 10:40:00",
+        "date" => date,
+        "end_date" => end_date,
         "fq_ref_date" => ""
     }.to_json
     data = ApplicationController.helpers.jq_http_request(body)

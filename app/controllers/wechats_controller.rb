@@ -94,7 +94,7 @@ class WechatsController < ApplicationController
       subscribtion = user.current_subscribtion
       package_type = subscribtion.nil? ? "未订阅" : subscribtion.package_type
       # package = Package.find_by(package_type: subscribtion.package_type)
-      user_stock_list = user.stock_lists
+      user_stock_list = user.vaild_stock_lists
       rest_watch_num = subscribtion.nil? ? 0 : (subscribtion.watch_num - user_stock_list.count)
       wechat.custom_message_send Wechat::Message.to(openid).text("您当前使用的套餐：#{package_type}\n已订阅数量：#{user_stock_list.count}\n剩余可订阅数量：#{rest_watch_num}")
       wechat.custom_message_send Wechat::Message.to(openid).text("请回复下列序号操作：\n3. 继续订阅\n4. 查询当前订阅列表\n5. 删除订阅")
@@ -172,12 +172,12 @@ class WechatsController < ApplicationController
       wechat.custom_message_send Wechat::Message.to(openid).text(reply)
 
     elsif op == "3" && subscribtion #订阅
-      current_watch = user.stock_lists.count
+      current_watch = user.vaild_stock_lists.count
       watch_num = subscribtion.watch_num
       wechat.custom_message_send Wechat::Message.to(openid).text("当前订阅数：#{current_watch.to_s}/#{watch_num.to_s}\n请输入6位股票代码")
 
     elsif op == "4" #查看
-      stock_lists = user.stock_lists
+      stock_lists = user.vaild_stock_lists
       if stock_lists.empty?
         reply = "您还没关注任何股票，请输入6位代码订阅"
       else
@@ -218,7 +218,7 @@ class WechatsController < ApplicationController
     flag = false
     stock = StockList.find_by(stock_code: op)
     subscribtion = user.current_subscribtion
-    available_num = subscribtion.watch_num - user.stock_lists.count
+    available_num = subscribtion.watch_num - user.vaild_stock_lists.count
 
     request.message_hash.each do |key, value|
       Rails.logger.warn "#{key}: #{value}"

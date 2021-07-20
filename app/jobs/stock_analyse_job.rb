@@ -1,13 +1,13 @@
 class StockAnalyseJob < ApplicationJob
   queue_as :first
 
-  after_perform :around_check
+  after_perform :new_user_package
 
   def perform(*args)
     @stock_code = args[0]
     @duration   = args[1]
 
-    data = ApplicationController.helpers.jq_data(@stock_code, @duration, 10)
+    data = ApplicationController.helpers.jq_data_bar_http(@stock_code, @duration, 10)
 
     if ApplicationController.helpers.csv_row_check(@stock_code, @duration)
       if data
@@ -34,9 +34,10 @@ class StockAnalyseJob < ApplicationJob
             stock_display_name: stock_analyse.stock_display_name,
             duration: stock_analyse.duration,
             begin_time: stock_analyse.begin_time,
-            end_time: stock_analyse.end_time
+            end_time: stock_analyse.end_time,
+            stock_analyse_id: stock_analyse.id
           )
-          if notification.save
+          if notification.save!
             NotificationJob.perform_later notification.id
           end
         rescue Exception => e
@@ -48,7 +49,10 @@ class StockAnalyseJob < ApplicationJob
 # Job.perform_later "1818559075", "verify_code", ""
 
   private
-  def around_check
-
+  def new_user_package
+    # user.current_subscribtion.package_type
+    # Subscribtion.where(package_type: "新手礼包").each do |sub|
+    #   user = sub.user
+    # end
   end
 end

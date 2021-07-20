@@ -33,37 +33,39 @@ class NotificationJob < ApplicationJob
 
   private
   def sms
-    begin
-      mobile = @notification.user.mobile
-      stock_code = @notification.stock_code
-      stock_display_name = @notification.stock_display_name
-      duration = case @notification.duration
-      when '1d'
-        "日线"
-      when '1m'
-        "分钟线"
-      end
+    mobile = @notification.user.mobile
+    if !mobile.nil? && !mobile.empty?
+      begin
+        stock_code = @notification.stock_code
+        stock_display_name = @notification.stock_display_name
+        duration = case @notification.duration
+        when '1d'
+          "日线"
+        when '1m'
+          "分钟线"
+        end
 
-      @var        = {}
-      @var["stock_code"] = stock_code
-      @var["stock_display_name"] = stock_display_name
-      @var["duration"] = duration
-      uri         = URI.parse("https://api.submail.cn/message/xsend.json")
-      username    = ENV['SMS_APPID']
-      password    = ENV['SMS_APPKEY']
-      project     = ENV['SMS_PROJECT2']
-      res         = Net::HTTP.post_form(uri, appid: username, to: mobile, project: project, signature: password, vars: @var.to_json)
+        @var        = {}
+        @var["stock_code"] = stock_code
+        @var["stock_display_name"] = stock_display_name
+        @var["duration"] = duration
+        uri         = URI.parse("https://api.submail.cn/message/xsend.json")
+        username    = ENV['SMS_APPID']
+        password    = ENV['SMS_APPKEY']
+        project     = ENV['SMS_PROJECT2']
+        res         = Net::HTTP.post_form(uri, appid: username, to: mobile, project: project, signature: password, vars: @var.to_json)
 
-      status      = JSON.parse(res.body)["status"]
-    rescue  Exception => ex
-      Rails.logger.warn "#{ex.message}"
-    ensure
-      if (status == "success")
-        @notification.sent
-      else
-        @notification.failed
+        status      = JSON.parse(res.body)["status"]
+      rescue  Exception => ex
+        Rails.logger.warn "#{ex.message}"
+      ensure
+        if (status == "success")
+          @notification.update(send_time: Time.now)
+          @notification.sent
+        else
+          @notification.failed
+        end
       end
     end
-
   end
 end

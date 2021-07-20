@@ -1,5 +1,7 @@
 class StockList < ApplicationRecord
   validates_lengths_from_database
+  has_many :user_stock_list_rels
+  has_many :users, :through => :user_stock_list_rels
 
   def watching_users(duration)
     current_date = Date.today

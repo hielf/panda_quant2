@@ -40,8 +40,8 @@ module Clockwork
     if job == 'stock.quotations_daily'
       current_time = Time.zone.now
       return if (current_time.saturday? || current_time.sunday?)
-      return if (current_time > "12:00".to_time && current_time < "13:00".to_time)
-      return if (current_time < "9:30".to_time || current_time > "15:00".to_time)
+      return if (current_time > "11:35".to_time && current_time < "13:00".to_time)
+      return if (current_time < "9:30".to_time || current_time > "15:05".to_time)
 
       duration = '1d'
       stock_lists = UserStockListRel.watching_list_daily
