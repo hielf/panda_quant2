@@ -44,18 +44,12 @@ module Clockwork
       return if (current_time < "9:30".to_time || current_time > "15:05".to_time)
 
       duration = '1d'
-      stock_lists = UserStockListRel.watching_list_daily
+      stock_lists_1 = UserStockListRel.watching_list_daily
+      stock_lists_2 = UserStockListRel.watching_list_tryout
+      stock_lists = stock_lists_1.union(stock_lists_2)
 
       stock_lists.each do |stock_list|
         stock_code = stock_list.stock_code
-        StockAnalyseJob.perform_later stock_code, duration
-      end
-
-      #新用户礼包
-      data = ApplicationController.helpers.jq_index_stocks_http("000300.XSHG")
-      stock_lists = CSV.parse(data)
-      stock_lists.each do |stock_list|
-        stock_code = stock_list[0][0..5]
         StockAnalyseJob.perform_later stock_code, duration
       end
     end

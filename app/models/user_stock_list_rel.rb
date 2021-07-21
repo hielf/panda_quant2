@@ -24,4 +24,8 @@ class UserStockListRel < ApplicationRecord
   def self.watching_list_daily
     where(status: "有效").filter_map{|usl| usl.stock_list}
   end
+
+  def self.watching_list_tryout
+    where(status: "试用").filter_map{|usl| usl.stock_list}
+  end
 end
