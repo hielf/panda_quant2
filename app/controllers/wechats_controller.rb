@@ -13,7 +13,7 @@ class WechatsController < ApplicationController
     end
     url = "https://pandaapi.ripple-tech.com/api/packages/new_user_package?openid=#{openid}"
     wechat.custom_message_send Wechat::Message.to(openid).text("欢迎关注本工具:\na)我们为您实时扫描订阅的证券行情\nb)在W形态买入点出现时向您发出通知")
-    wechat.custom_message_send Wechat::Message.to(openid).text("请按<a href='#{url}'>【这里】</a>获取免费5个交易日的新用户礼包\n包含沪深300成份股票的日线级别提醒")
+    wechat.custom_message_send Wechat::Message.to(openid).text("👉请按【联系反馈】【新用户礼包】👈获取免费5个交易日的新用户福利\n包含沪深300成份股票的日线级别提醒")
 
     request.reply.success
     user.op("event", "subscribe") if user
@@ -29,9 +29,16 @@ class WechatsController < ApplicationController
     if user.save!
       user.update(nickname: nickname, avatar: avatar)
     end
-    url = "https://pandaapi.ripple-tech.com/api/packages/new_user_package?openid=#{openid}"
 
-    wechat.custom_message_send Wechat::Message.to(openid).text("请按<a href='#{url}'>【这里】</a>获取免费5个交易日的新用户礼包\n包含沪深300成份股票的日线级别提醒")
+    if user
+      url = "https://pandaapi.ripple-tech.com/api/packages/new_user_package?openid=#{openid}"
+      res = HTTParty.get url
+      json = JSON.parse(res.body)
+
+      if user.mobile.nil? || user.mobile.empty?
+        wechat.custom_message_send Wechat::Message.to(openid).text("您可以在微信对话栏回复手机号，以便获取短信通知\n本公众号承诺不会向您发送除W形态报告以外的任何消息")
+      end
+    end
 
     request.reply.success
     user.op("click", "newuser") if user

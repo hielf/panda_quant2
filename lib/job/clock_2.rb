@@ -16,27 +16,26 @@ module Clockwork
   # handler receives the time when job is prepared to run in the 2nd argument
   handler do |job, time|
     current_time = Time.zone.now
-    return if (current_time.saturday? || current_time.sunday?)
-    return if (current_time > "12:00".to_time && current_time < "13:00".to_time)
-    return if (current_time < "9:30".to_time || current_time > "15:00".to_time)
 
-    if job == 'minute'
-      Rails.logger.warn "minute job start"
-      duration = '1m'
+    if job == 'tryout'
+      data = ApplicationController.helpers.jq_index_stocks_http("000300.XSHG")
+      lists = CSV.parse(data)
+      package = Package.find_by(package_type: "新手礼包")
+      subscribtions = Subscribtion.tryouts.today
 
-    end
-
-    if job == 'daily'
-      Rails.logger.warn "daily job start"
-      duration = '1d'
-      
+      subscribtions.each do |sub|
+        lists.each do |l|
+          stock_code = l[0][0..5]
+          stock_list = StockList.find_by(stock_code: stock_code)
+          sub.user.tryout!(stock_list)
+        end
+      end
     end
   end
 
   # every(1.minute, 'recommend.quotes', :thread => false)
-  every(1.minute, 'minute', :thread => true)
-  every(1.day, 'daily', :at => '10:05', :thread => true)
-  every(1.day, 'daily', :at => '14:35', :thread => true)
+  every(1.day, 'tryout', :at => '12:05', :thread => true)
+  every(1.day, 'tryout', :at => '15:05', :thread => true)
   # every(1.minute, 'timing', :skip_first_run => true, :thread => true)
   # every(1.hour, 'hourly.job')
 end
