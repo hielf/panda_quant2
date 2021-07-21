@@ -66,6 +66,8 @@ class Api::PackagesController < Api::ApplicationController
       result= ex.message
     end
     Wechat.api.custom_message_send Wechat::Message.to(params[:openid]).text(result)
+
+    render_json [0, 'OK', result]
   end
 
   private
