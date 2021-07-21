@@ -51,7 +51,6 @@ def find_X(n, m, p, df):
                 if (X.close_desceding_status.values[0] == False):
                     # print (i, r.id, bottom_price, r.close_desceding_count, r.close_desceding_rate)
                     break
-
     return id, bottom_price, x_time
 
 # 向上回调
@@ -69,13 +68,12 @@ def find_Y(x_id, df):
             if (Y.close_rising_status.values[0] == False):
     #             print (Y.id, resistant_price)
                 break
-
     return id, resistant_price, y_time
 
 # 再次向下调整
 def find_Z(y_id, resistant_price, bottom_price, df):
     mask = df['id'] > y_id
-    flag = True
+    flag = False
     second_bottom_price = 0
     id = 0
     count = 1
@@ -86,8 +84,8 @@ def find_Z(y_id, resistant_price, bottom_price, df):
         if (df.id == (r.id - 1)).any():
             second_bottom_price = float(Z.close)
             z_time = df.loc[df['id'] == (r.id - 1)].index[0]
-#             print (i, int(Z.id), second_bottom_price, resistant_price)
-            if count >= 3:
+            # print (i, int(Z.id), second_bottom_price, resistant_price)
+            if r.id >= df.max().id:
                 flag = False
                 id = int(r.id)
                 break
@@ -96,10 +94,10 @@ def find_Z(y_id, resistant_price, bottom_price, df):
                 id = int(r.id)
                 break
             if ((r.close_rising_status == True) & (second_bottom_price < resistant_price)):
+                flag = True
                 id = int(Z.id)
                 break
         count = count + 1
-
     return id, flag, second_bottom_price, z_time
 
 # 向上回拉，创新高
@@ -124,7 +122,6 @@ def find_buy_point(run_flag, z_id, resistant_price, df, q):
             id = int(r.id)
             b_time = df.loc[df['id'] == id].index[0]
             break
-
     return id, flag, buy_price, b_time
 
 # 冲高回落
@@ -195,7 +192,7 @@ if __name__ == '__main__':
     json_path = sys.argv[9]
     data_path = sys.argv[10]
 
-    data = pd.read_csv(data_path, sep=',', encoding='utf-8', index_col=0)
+    data = pd.read_csv(data_path, sep=',', encoding='utf-8', index_col=0, error_bad_lines=False)
     df = process_data(data)
     # print (df)
     # df.to_csv('tmp.csv', sep='\t', encoding='utf-8')
@@ -213,25 +210,25 @@ if __name__ == '__main__':
     while market_df.shape[0] > 1:
         points = []
         current_df = market_df.drop(market_df[market_df.id < id].index)
-
+        # print (id)
         x_id, bottom_price, x_time = find_X(n, m, p, current_df)
         id = x_id
         if bottom_price == 0 and id == 0:
             break
-
+        # print (id)
         y_id, r_p, y_time = find_Y(x_id, current_df)
         id = y_id
         if r_p == 0 and id == 0:
             break
-
+        # print (id)
         z_id, z_flag, s_b_p, z_time = find_Z(y_id, r_p, bottom_price, current_df)
         id = z_id
         if s_b_p == 0 and id == 0:
             break
-
+        # print (id)
         b_p_id, flag, b_p, b_time = find_buy_point(z_flag, z_id, r_p, current_df, q)
         id = b_p_id
-
+        # print (id)
         net = 0
         if flag == True:
             print('hit bottom', x_id, bottom_price)
@@ -248,7 +245,6 @@ if __name__ == '__main__':
             # points.append([s_p_id, s_p, "卖出 SELL"])
             # id = s_p_id
             id = b_p_id
-
             mask = ((current_df['id'] >= x_id - n) & (current_df['id'] <= b_p_id))
             mask_df = current_df.loc[mask]
             profit_ratio = 0

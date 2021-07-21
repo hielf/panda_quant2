@@ -21,6 +21,7 @@ class StockAnalyseJob < ApplicationJob
     end
 
     find_w_flag = ApplicationController.helpers.find_w(@stock_code, @duration)
+    
     if find_w_flag != false
       stock_analyse = find_w_flag
       stock_list = Stock_list.find_by(stock_code: stock_analyse.stock_code)
