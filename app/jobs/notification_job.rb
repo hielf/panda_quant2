@@ -18,8 +18,8 @@ class NotificationJob < ApplicationJob
         template["template"]["url"] = url
         template["template"]["data"]["first"]["value"] = "您关注的：#{stock_analyse.stock_display_name}(#{stock_analyse.stock_code})已触发W形态"
         template["template"]["data"]["keyword1"]["value"] = stock_analyse.stock_display_name
-        template["template"]["data"]["keyword2"]["value"] = "k线价格W形态"
-        template["template"]["data"]["keyword3"]["value"] = "#{stock_analyse.duration == '1d' ? '日线' : '分钟线'}"
+        template["template"]["data"]["keyword2"]["value"] = "#{stock_analyse.duration == '1d' ? '日线' : '分钟线'}"
+        template["template"]["data"]["keyword3"]["value"] = "k线价格W形态"
         template["template"]["data"]["keyword4"]["value"] = "#{stock_analyse.end_time.strftime('%Y-%m-%d %H:%M')}触发"
         template["template"]["data"]["remark"]["value"] = "点击本条提醒，查看详情"
 

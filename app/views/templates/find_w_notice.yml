@@ -5,7 +5,7 @@ template:
   data:
     first:
       value: "*first"
-      color: "#0A0A0A"
+      color: "#0043A1"
     keyword1:
       value: "*keyword1"
       color: "#0A0A0A"

@@ -48,9 +48,10 @@ module Clockwork
       stock_lists_2 = UserStockListRel.watching_list_tryout
       stock_lists = stock_lists_1.union(stock_lists_2)
 
-      stock_lists.each do |stock_list|
+      # stock_lists.each do |stock_list|
+      Parallel.each(stock_lists, in_processes: 4) do |stock_list|
         stock_code = stock_list.stock_code
-        StockAnalyseJob.perform_later stock_code, duration
+        StockAnalyseJob.perform_now stock_code, duration
       end
     end
   end
