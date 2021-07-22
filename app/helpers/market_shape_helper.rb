@@ -43,7 +43,7 @@ module MarketShapeHelper
               end
             end
           end
-          if flag = false
+          if flag == false
             stock_analyse = StockAnalysis.new(stock_code: sa["stock_code"],
               duration: sa["duration"],
               params: sa["params"],
