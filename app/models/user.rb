@@ -23,8 +23,12 @@ class User < ApplicationRecord
 
   def op(type, message)
     message = message.slice(0..255) if (message != "" && !message.nil?)
-    log = op_logs.new(op_type: type, op_message: message, op_time: Time.now)
-    log.save!
+    begin
+      log = op_logs.new(op_type: type, op_message: message, op_time: Time.now)
+      log.save!
+    rescue Exception => e
+      Rails.logger.warn "op save failed: #{e}"
+    end
   end
 
   def last_op
