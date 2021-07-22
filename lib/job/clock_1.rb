@@ -31,9 +31,9 @@ module Clockwork
       duration = '1m'
       stock_lists = UserStockListRel.watching_list_min.uniq
 
-      stock_lists.each do |stock_list|
+      Parallel.each(stock_lists, in_processes: 4) do |stock_list|
         stock_code = stock_list.stock_code
-        StockAnalyseJob.perform_later stock_code, duration
+        StockAnalyseJob.perform_now stock_code, duration
       end
     end
 
