@@ -13,7 +13,7 @@ class WechatsController < ApplicationController
     end
     url = "https://pandaapi.ripple-tech.com/api/packages/new_user_package?openid=#{openid}"
     wechat.custom_message_send Wechat::Message.to(openid).text("欢迎关注本工具:\na)我们为您实时扫描订阅的证券行情\nb)在W形态买入点出现时向您发出通知")
-    wechat.custom_message_send Wechat::Message.to(openid).text("👉请按【联系反馈】【新用户礼包】👈获取免费5个交易日的新用户福利\n包含沪深300成份股票的日线级别提醒")
+    wechat.custom_message_send Wechat::Message.to(openid).text("请按👉【联系反馈】【新用户礼包】👈\n\n获取免费5个交易日的新用户福利🔥\n包含沪深300成份股票的日线级别提醒📈")
 
     request.reply.success
     user.op("event", "subscribe") if user
@@ -265,7 +265,7 @@ class WechatsController < ApplicationController
     user = User.find_by(openid: openid)
 
     wechat.custom_message_send Wechat::Message.to(openid).text("本工具提供：\n1. 监测日线行情股票走势\n2. 当被关注的股票出现<a href='https://zhuanlan.zhihu.com/p/101289251'>W形态行情</a>时，发送短信、微信通知")
-    wechat.custom_message_send Wechat::Message.to(openid).text("订阅成功后，订阅期限将自动延长\n如续期变更套餐的，在新套餐开始前延续现有套餐的关注上限，在新套餐生效后会自动转为新的关注上限")
+    wechat.custom_message_send Wechat::Message.to(openid).text("3.订阅成功后，订阅期限将自动延长\n4.如续期变更套餐的，在新套餐开始前延续现有套餐的关注上限，在新套餐生效后会自动转为新的关注上限")
 
     # request.reply.text "User: #{request[:FromUserName]} click #{key}"
     request.reply.success

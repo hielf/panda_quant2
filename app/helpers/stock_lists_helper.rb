@@ -38,14 +38,14 @@ module StockListsHelper
   end
 
   def jq_from_date(duration, row)
-    current_time = Time.now
+    current_time = Time.now - 1.minute
     end_date = current_time.strftime("%Y-%m-%d %H:%M:%S")
     date =
     case duration
     when '1d'
       (current_time - row.days).strftime("%Y-%m-%d %H:%M:%S")
     when '1m'
-      if (current_time < "9:30".to_time || current_time > "15:00".to_time)
+      if (current_time < "9:30".to_time || current_time > "15:03".to_time)
         if current_time > "00:00".to_time
           ((current_time - 1.days).change({ hour: 15, min: 0, sec: 0 }) - row.minutes).strftime("%Y-%m-%d %H:%M:%S")
         else

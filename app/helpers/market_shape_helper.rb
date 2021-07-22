@@ -31,10 +31,19 @@ module MarketShapeHelper
 
     if data
       data.each do |sa|
+        flag = false
         begin
           stock_list = StockList.find_by(stock_code: sa["stock_code"])
-          stock_analyse = StockAnalysis.find_by(stock_code: sa["stock_code"], duration: sa["duration"], begin_time: sa["begin_time"])
-          if stock_analyse.nil?
+          stock_analyse = StockAnalysis.where(stock_code: sa["stock_code"], duration: sa["duration"])
+          if stock_analyse.any?
+            stock_analyse.each do |sa|
+              if ApplicationController.helpers.strftime_time(sa.begin_time) == ApplicationController.helpers.strftime_time(sa["begin_time"].to_datetime)
+                flag = true
+                break
+              end
+            end
+          end
+          if flag = false
             stock_analyse = StockAnalysis.new(stock_code: sa["stock_code"],
               duration: sa["duration"],
               params: sa["params"],
@@ -43,7 +52,7 @@ module MarketShapeHelper
               begin_time: sa["begin_time"],
               end_time: sa["end_time"],
               stock_display_name: stock_list.stock_display_name)
-              
+
             if stock_analyse
               stock_analyse.save
               find_w_flag = stock_analyse

@@ -25,11 +25,11 @@ module Clockwork
       current_time = Time.zone.now
       return if (current_time.saturday? || current_time.sunday?)
       return if (current_time > "12:00".to_time && current_time < "13:00".to_time)
-      return if (current_time < "9:30".to_time || current_time > "15:00".to_time)
+      return if (current_time < "9:30".to_time || current_time > "15:03".to_time)
       sleep 3
 
       duration = '1m'
-      stock_lists = UserStockListRel.watching_list_min
+      stock_lists = UserStockListRel.watching_list_min.uniq
 
       stock_lists.each do |stock_list|
         stock_code = stock_list.stock_code
