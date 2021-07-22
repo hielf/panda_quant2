@@ -47,7 +47,7 @@ const Subtitle = styled.div`
 const Info = styled.div`
   /* float: left; */
   width: 100%;
-  color: #666c72;
+  /* color: #666c72; */
   font-size: 16px;
   font-weight: light;
   /* display: table-cell; */
@@ -71,7 +71,7 @@ const Desc = styled.p`
 `
 
 const Hint = styled.p`
-  color: #ffd658;
+  color: #ff5858;
   text-align: center;
   padding-left: 8px;
   margin: 20px 0px;
@@ -102,7 +102,7 @@ const Stockanalysis = (props) => {
       else {
         length = 7 + (Math.abs(Date.parse(end_time) - Date.parse(start_time)) / (1000 * 60))
       }
-      console.log(length)
+      // console.log(length)
 
 
       axios.get('/api/stock_lists/market_quotations', {
@@ -175,8 +175,8 @@ const Stockanalysis = (props) => {
   		borderVisible: false,
     })
 
-    console.log(quotation.data)
-    console.log(stockanalysis.data)
+    // console.log(quotation.data)
+    // console.log(stockanalysis.data)
     // debugger
 
     const data = quotation.data
