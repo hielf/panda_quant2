@@ -48,7 +48,13 @@ class WechatsController < ApplicationController
   on :text, with: /^1[3-9]\d{9}$/ do |request|
     openid = request[:FromUserName]
     mobile = request[:Content]
-    user = User.find_by(openid: openid)
+    new_user = Wechat.api.user openid
+    nickname = new_user["nickname"]
+    avatar = new_user["headimgurl"]
+    user = User.find_or_initialize_by(openid: openid)
+    if user.save!
+      user.update(nickname: nickname, avatar: avatar)
+    end
     # if content.match(/^1[3-9]\d{9}$/)
     #   true
     # end
@@ -73,7 +79,13 @@ class WechatsController < ApplicationController
   on :text, with: /^\d{4}$/ do |request|
     openid = request[:FromUserName]
     verify_code = request[:Content]
-    user = User.find_by(openid: openid)
+    new_user = Wechat.api.user openid
+    nickname = new_user["nickname"]
+    avatar = new_user["headimgurl"]
+    user = User.find_or_initialize_by(openid: openid)
+    if user.save!
+      user.update(nickname: nickname, avatar: avatar)
+    end
     reply = ""
 
     request.message_hash.each do |key, value|
@@ -95,7 +107,13 @@ class WechatsController < ApplicationController
   #subscribe
   on :click, with: 'SUBSCRIBE' do |request, key|
     openid = request[:FromUserName]
-    user = User.find_by(openid: openid)
+    new_user = Wechat.api.user openid
+    nickname = new_user["nickname"]
+    avatar = new_user["headimgurl"]
+    user = User.find_or_initialize_by(openid: openid)
+    if user.save!
+      user.update(nickname: nickname, avatar: avatar)
+    end
 
     if ApplicationController.helpers.has_subscribe(user)
       subscribtion = user.current_subscribtion
@@ -117,7 +135,13 @@ class WechatsController < ApplicationController
   #package
   on :click, with: 'PACKAGE' do |request, key|
     openid = request[:FromUserName]
-    user = User.find_by(openid: openid)
+    new_user = Wechat.api.user openid
+    nickname = new_user["nickname"]
+    avatar = new_user["headimgurl"]
+    user = User.find_or_initialize_by(openid: openid)
+    if user.save!
+      user.update(nickname: nickname, avatar: avatar)
+    end
 
     packages = user.subscribtions
     reply = "您当前的套餐："
@@ -140,7 +164,13 @@ class WechatsController < ApplicationController
   on :text, with: /^\d{1}$/ do |request|
     openid = request[:FromUserName]
     op = request[:Content]
-    user = User.find_by(openid: openid)
+    new_user = Wechat.api.user openid
+    nickname = new_user["nickname"]
+    avatar = new_user["headimgurl"]
+    user = User.find_or_initialize_by(openid: openid)
+    if user.save!
+      user.update(nickname: nickname, avatar: avatar)
+    end
     subscribtion = user.current_subscribtion
     flag = true
 
@@ -221,7 +251,13 @@ class WechatsController < ApplicationController
   on :text, with: /^\d{6}$/ do |request|
     openid = request[:FromUserName]
     op = request[:Content]
-    user = User.find_by(openid: openid)
+    new_user = Wechat.api.user openid
+    nickname = new_user["nickname"]
+    avatar = new_user["headimgurl"]
+    user = User.find_or_initialize_by(openid: openid)
+    if user.save!
+      user.update(nickname: nickname, avatar: avatar)
+    end
     flag = false
     stock = StockList.find_by(stock_code: op)
     subscribtion = user.current_subscribtion
@@ -262,7 +298,13 @@ class WechatsController < ApplicationController
   #help
   on :click, with: 'HELP' do |request, key|
     openid = request[:FromUserName]
-    user = User.find_by(openid: openid)
+    new_user = Wechat.api.user openid
+    nickname = new_user["nickname"]
+    avatar = new_user["headimgurl"]
+    user = User.find_or_initialize_by(openid: openid)
+    if user.save!
+      user.update(nickname: nickname, avatar: avatar)
+    end
 
     wechat.custom_message_send Wechat::Message.to(openid).text("本工具提供：\n1. 监测日线行情股票走势\n2. 当被关注的股票出现<a href='https://zhuanlan.zhihu.com/p/101289251'>W形态行情</a>时，发送短信、微信通知")
     wechat.custom_message_send Wechat::Message.to(openid).text("3.订阅成功后，订阅期限将自动延长\n4.如续期变更套餐的，在新套餐开始前延续现有套餐的关注上限，在新套餐生效后会自动转为新的关注上限")
@@ -320,9 +362,15 @@ class WechatsController < ApplicationController
   # 当无任何 responder 处理用户信息时,使用这个 responder 处理
   on :fallback do |request|
     openid = request[:FromUserName]
-    user = User.find_by(openid: openid)
+    new_user = Wechat.api.user openid
+    nickname = new_user["nickname"]
+    avatar = new_user["headimgurl"]
+    user = User.find_or_initialize_by(openid: openid)
+    if user.save!
+      user.update(nickname: nickname, avatar: avatar)
+    end
 
-    wechat.custom_message_send Wechat::Message.to(openid).text("请选择菜单下的功能进行操作")
+    wechat.custom_message_send Wechat::Message.to(openid).text("欢迎使用")
     request.reply.success # request is XML result hash.
     user.op("fallback", request[:Content]) if user
   end
