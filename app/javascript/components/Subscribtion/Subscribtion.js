@@ -31,7 +31,7 @@ const Title = styled.div`
 `
 
 const Message = styled.span`
-  color: #fec107;
+  color: #ffd658;
   font-size: 20px;
   font-weight: light;
   /* display: table-cell; */

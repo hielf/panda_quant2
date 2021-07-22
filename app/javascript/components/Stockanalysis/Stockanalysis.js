@@ -71,7 +71,7 @@ const Desc = styled.p`
 `
 
 const Hint = styled.p`
-  color: #fec107;
+  color: #ffd658;
   text-align: center;
   padding-left: 8px;
   margin: 20px 0px;
