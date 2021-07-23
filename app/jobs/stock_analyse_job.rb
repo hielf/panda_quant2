@@ -29,7 +29,7 @@ class StockAnalyseJob < ApplicationJob
 
       users.each do |user|
         begin
-          notification = user.push_notifications.new(
+          notification = user.push_notifications.find_or_initialize_by(
             note_type: "推送通知",
             stock_code: stock_analyse.stock_code,
             stock_display_name: stock_analyse.stock_display_name,

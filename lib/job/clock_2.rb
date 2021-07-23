@@ -28,14 +28,33 @@ module Clockwork
           stock_code = l[0][0..5]
           stock_list = StockList.find_by(stock_code: stock_code)
           sub.user.tryout!(stock_list)
+
+          stock_analyse = StockAnalyse.where(stock_code: stock_code).today.last
+          begin
+            notification = sub.user.push_notifications.find_or_initialize_by(
+              note_type: "推送通知",
+              stock_code: stock_analyse.stock_code,
+              stock_display_name: stock_analyse.stock_display_name,
+              duration: stock_analyse.duration,
+              begin_time: stock_analyse.begin_time,
+              end_time: stock_analyse.end_time,
+              stock_analyse_id: stock_analyse.id
+            )
+            if notification.save!
+              NotificationJob.perform_later notification.id
+            end
+          rescue Exception => e
+            Rails.logger.warn "StockAnalyseJob failed: #{e}"
+          end
         end
       end
     end
   end
 
   # every(1.minute, 'recommend.quotes', :thread => false)
-  every(1.day, 'tryout', :at => '12:05', :thread => true)
-  every(1.day, 'tryout', :at => '15:05', :thread => true)
+  every(1.hour, 'tryout', :thread => true)
+  # every(1.day, 'tryout', :at => '12:05', :thread => true)
+  # every(1.day, 'tryout', :at => '15:05', :thread => true)
   # every(1.minute, 'timing', :skip_first_run => true, :thread => true)
   # every(1.hour, 'hourly.job')
 end

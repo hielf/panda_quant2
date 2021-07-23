@@ -11,7 +11,7 @@ class WechatsController < ApplicationController
     if user.save!
       user.update(nickname: nickname, avatar: avatar)
     end
-    
+
     wechat.custom_message_send Wechat::Message.to(openid).text("欢迎关注本工具:\na)我们为您实时扫描订阅的证券行情\nb)在W形态买入点出现时向您发出通知")
     wechat.custom_message_send Wechat::Message.to(openid).text("请按👇\n【联系反馈】\n【新用户礼包】\n\n获取免费5个交易日的新用户福利🔥\n包含沪深300成份股票的日线级别提醒📈")
 
@@ -370,7 +370,7 @@ class WechatsController < ApplicationController
       user.update(nickname: nickname, avatar: avatar)
     end
 
-    wechat.custom_message_send Wechat::Message.to(openid).text("欢迎使用")
+    # wechat.custom_message_send Wechat::Message.to(openid).text("欢迎使用")
     request.reply.success # request is XML result hash.
     user.op("fallback", request[:Content]) if user
   end
