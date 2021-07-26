@@ -9,7 +9,7 @@ import numpy
 from time import sleep
 
 # sleep_time=5
-engine = create_engine('postgresql+psycopg2://chesp:Chesp92J5@rm-2zelv192ymyi9680vo.pg.rds.aliyuncs.com:3432/panda_quant',echo=True,client_encoding='utf8')
+engine = create_engine('postgresql+psycopg2://chesp:Chesp2021@postgres.ripple-tech.com:5432/panda_quant',echo=True,client_encoding='utf8')
 conn = engine.raw_connection()
 cur = conn.cursor()
 

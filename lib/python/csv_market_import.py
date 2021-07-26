@@ -8,8 +8,8 @@ directory = "/Users/hielf/Downloads/wind/data/a_stock/"
 for file in sorted(os.listdir(directory)):
     filename = os.fsdecode(file)
     if filename.lower().endswith('.csv'):
-        conn = psycopg2.connect("host='rm-2zelv192ymyi9680vo.pg.rds.aliyuncs.com' dbname='panda_quant' user='chesp' password='Chesp92J5' port='3432'")
-        conn2 = psycopg2.connect("host='rm-2zelv192ymyi9680vo.pg.rds.aliyuncs.com' dbname='panda_quant' user='chesp' password='Chesp92J5' port='3432'")
+        conn = psycopg2.connect("host='postgres.ripple-tech.com' dbname='panda_quant' user='chesp' password='Chesp2021' port='5432'")
+        conn2 = psycopg2.connect("host='postgres.ripple-tech.com' dbname='panda_quant' user='chesp' password='Chesp2021' port='5432'")
         cur = conn.cursor()
         cur2 = conn2.cursor()
         print(directory + filename + " :started")
@@ -120,7 +120,7 @@ sql = """
     from wind_data;
 """
 
-conn = psycopg2.connect("host='rm-2zelv192ymyi9680vo.pg.rds.aliyuncs.com' dbname='panda_quant' user='chesp' password='Chesp92J5' port='3432'")
+conn = psycopg2.connect("host='postgres.ripple-tech.com' dbname='panda_quant' user='chesp' password='Chesp2021' port='5432'")
 cur = conn.cursor()
 cur.execute(sql, (10, 1000000, False, False))
 conn.commit()
