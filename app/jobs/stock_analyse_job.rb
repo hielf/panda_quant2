@@ -1,12 +1,13 @@
 class StockAnalyseJob < ApplicationJob
   queue_as :first
 
-  after_perform :new_user_package
+  after_perform :after
 
   def perform(*args)
     @stock_code = args[0]
     @duration   = args[1]
 
+    Rails.logger.warn "StockAnalyseJob started: #{stock_code} #{duration}"
     data = ApplicationController.helpers.jq_data_bar_http(@stock_code, @duration, 10)
 
     if ApplicationController.helpers.csv_row_check(@stock_code, @duration)
@@ -50,10 +51,11 @@ class StockAnalyseJob < ApplicationJob
 # Job.perform_later "1818559075", "verify_code", ""
 
   private
-  def new_user_package
+  def after
     # user.current_subscribtion.package_type
     # Subscribtion.where(package_type: "新手礼包").each do |sub|
     #   user = sub.user
     # end
+    Rails.logger.warn "StockAnalyseJob started: #{stock_code} #{duration}"
   end
 end
