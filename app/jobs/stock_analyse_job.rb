@@ -7,7 +7,7 @@ class StockAnalyseJob < ApplicationJob
     @stock_code = args[0]
     @duration   = args[1]
 
-    Rails.logger.warn "StockAnalyseJob started: #{stock_code} #{duration}"
+    Rails.logger.warn "StockAnalyseJob started: #{@stock_code} #{@duration}"
     data = ApplicationController.helpers.jq_data_bar_http(@stock_code, @duration, 10)
 
     if ApplicationController.helpers.csv_row_check(@stock_code, @duration)
@@ -56,6 +56,6 @@ class StockAnalyseJob < ApplicationJob
     # Subscribtion.where(package_type: "新手礼包").each do |sub|
     #   user = sub.user
     # end
-    Rails.logger.warn "StockAnalyseJob started: #{stock_code} #{duration}"
+    Rails.logger.warn "StockAnalyseJob finished: #{@stock_code} #{@duration}"
   end
 end
