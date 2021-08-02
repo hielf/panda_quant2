@@ -18,33 +18,39 @@ module Clockwork
     current_time = Time.zone.now
 
     if job == 'tryout'
-      data = ApplicationController.helpers.jq_index_stocks_http("000300.XSHG")
-      lists = CSV.parse(data)
+      data_1 = ApplicationController.helpers.jq_index_stocks_http("000300.XSHG")
+      data_2 = ApplicationController.helpers.jq_index_stocks_http("399006.XSHE")
+      lists_1 = CSV.parse(data_1)
+      lists_2 = CSV.parse(data_2)
+      lists = lists_1 + lists_2
       package = Package.find_by(package_type: "新手礼包")
       subscribtions = Subscribtion.tryouts.today
 
       subscribtions.each do |sub|
         lists.each do |l|
           stock_code = l[0][0..5]
+          p stock_code
           stock_list = StockList.find_by(stock_code: stock_code)
           sub.user.tryout!(stock_list)
 
           stock_analyse = StockAnalyse.where(stock_code: stock_code).today.last
-          begin
-            notification = sub.user.push_notifications.find_or_initialize_by(
-              note_type: "推送通知",
-              stock_code: stock_analyse.stock_code,
-              stock_display_name: stock_analyse.stock_display_name,
-              duration: stock_analyse.duration,
-              begin_time: stock_analyse.begin_time,
-              end_time: stock_analyse.end_time,
-              stock_analyse_id: stock_analyse.id
-            )
-            if notification.save!
-              NotificationJob.perform_later notification.id
+          if stock_analyse
+            begin
+              notification = sub.user.push_notifications.find_or_initialize_by(
+                note_type: "推送通知",
+                stock_code: stock_analyse.stock_code,
+                stock_display_name: stock_analyse.stock_display_name,
+                duration: stock_analyse.duration,
+                begin_time: stock_analyse.begin_time,
+                end_time: stock_analyse.end_time,
+                stock_analyse_id: stock_analyse.id
+              )
+              if notification.save!
+                NotificationJob.perform_later notification.id
+              end
+            rescue Exception => e
+              Rails.logger.warn "StockAnalyseJob failed: #{e}"
             end
-          rescue Exception => e
-            Rails.logger.warn "StockAnalyseJob failed: #{e}"
           end
         end
       end

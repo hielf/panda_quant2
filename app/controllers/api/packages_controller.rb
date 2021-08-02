@@ -60,7 +60,7 @@ class Api::PackagesController < Api::ApplicationController
           end_date = start_date + package.date_num
           current_user.subscribtions.create!(start_date: start_date, end_date: end_date, package_type: package.package_type, watch_num: package.watch_num, note:package.desc)
         end
-        result = "新用户礼包领取成功，您将在5个交易日内任意沪深300成份股票出现W形态买点时获得提醒"
+        result = "新用户礼包领取成功，您将在5个交易日内以下成份股票出现W形态买点时获得提醒:\n1.沪深300\n2.创业板指"
       end
     rescue Exception => ex
       result= ex.message

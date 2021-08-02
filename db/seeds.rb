@@ -19,4 +19,4 @@ Package.find_or_create_by(title: "包年基础套餐", period: "一年", date_nu
 Package.find_or_create_by(title: "包月高级套餐", period: "月", date_num: 30, market_price: 90, discount: 1, real_price: 90*1, package_type: "高级套餐", desc: "可关注50个代码，日线、分钟线级别提醒", watch_num: 50)
 Package.find_or_create_by(title: "半年高级套餐", period: "半年", date_num: 180, market_price: 500, discount: 0.9, real_price: 500*0.9, package_type: "高级套餐", desc: "可关注50个代码，日线、分钟线级别提醒", watch_num: 50)
 Package.find_or_create_by(title: "包年高级套餐", period: "一年", date_num: 365, market_price: 1000, discount: 0.75, real_price: 1000*0.75, package_type: "高级套餐", desc: "可关注50个代码，日线、分钟线级别提醒", watch_num: 50)
-Package.find_or_create_by(title: "新用户大礼包", period: "天", date_num: 7, market_price: 0, discount: 1, real_price: 0, package_type: "新手礼包", desc: "赠送沪深300成份指数股票日线级别提醒", watch_num: 0)
+Package.find_or_create_by(title: "新用户大礼包", period: "天", date_num: 7, market_price: 0, discount: 1, real_price: 0, package_type: "新手礼包", desc: "赠送精选成份指数股票日线级别提醒", watch_num: 0)
