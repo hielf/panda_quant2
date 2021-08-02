@@ -43,6 +43,8 @@ class NotificationJob < ApplicationJob
           "日线"
         when '1m'
           "分钟线"
+        when '5m'
+          "5分钟线"
         end
 
         @var        = {}

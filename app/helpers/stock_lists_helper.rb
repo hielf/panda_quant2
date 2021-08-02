@@ -56,6 +56,18 @@ module StockListsHelper
       else
         (current_time - row.minutes).strftime("%Y-%m-%d %H:%M:%S")
       end
+    when '5m'
+      if (current_time < "9:30".to_time || current_time > "15:03".to_time)
+        if current_time > "00:00".to_time
+          ((current_time - 1.days).change({ hour: 15, min: 0, sec: 0 }) - 5 * row.minutes).strftime("%Y-%m-%d %H:%M:%S")
+        else
+          (current_time.change({ hour: 15, min: 0, sec: 0 }) - 5 * row.minutes).strftime("%Y-%m-%d %H:%M:%S")
+        end
+      elsif (current_time > "11:30".to_time && current_time < "13:00".to_time)
+        (current_time.change({ hour: 11, min: 30, sec: 0 }) - 5 * row.minutes).strftime("%Y-%m-%d %H:%M:%S")
+      else
+        (current_time - row.minutes).strftime("%Y-%m-%d %H:%M:%S")
+      end
     end
 
     return date, end_date
@@ -149,8 +161,8 @@ module StockListsHelper
     table = CSV.parse(File.read(file), headers: true)
     tmp_table = CSV.parse(File.read(tmp_file), headers: true)
     last_date = table[-1]["date"]
-    tmp_table.delete_if do |row|
-      row["date"].to_time <= last_date.to_time
+    table.delete_if do |row|
+      row["date"].to_time == last_date.to_time
     end
     tmp_table.each do |row|
       table.push(row)

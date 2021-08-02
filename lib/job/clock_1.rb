@@ -37,6 +37,22 @@ module Clockwork
       end
     end
 
+    if job == 'stock.quotations_5min'
+      current_time = Time.zone.now
+      return if (current_time.saturday? || current_time.sunday?)
+      return if (current_time > "12:00".to_time && current_time < "13:00".to_time)
+      return if (current_time < "9:30".to_time || current_time > "15:03".to_time)
+      sleep 3
+
+      duration = '5m'
+      stock_lists = UserStockListRel.watching_list_min.uniq
+
+      Parallel.each(stock_lists, in_processes: 4) do |stock_list|
+        stock_code = stock_list.stock_code
+        StockAnalyseJob.perform_now stock_code, duration
+      end
+    end
+
     if job == 'stock.quotations_daily'
       current_time = Time.zone.now
       return if (current_time.saturday? || current_time.sunday?)
@@ -56,7 +72,7 @@ module Clockwork
     end
   end
 
-  every(1.minute, 'stock.quotations_min', :thread => true)
+  every(5.minute, 'stock.quotations_5min', :thread => true)
   every(1.day, 'stock.quotations_daily', :at => '10:00', :thread => true)
   every(1.day, 'stock.quotations_daily', :at => '14:30', :thread => true)
   every(1.day, 'stock.list', :at => '19:00')
