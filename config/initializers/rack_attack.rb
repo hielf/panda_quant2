@@ -5,7 +5,7 @@ class Rack::Attack
   #   [ 200, { 'Content-Type' => 'application/json' }, [{ status: 0, message: "Too many requests!!!", error: "Too many requests!!!" }.to_json] ]
   # end
 
-  Rack::Attack.throttled_callback = lambda do |request|
+  Rack::Attack.throttled_response = lambda do |request|
     # NB: you have access to the name and other data about the matched throttle
     #  request.env['rack.attack.matched'],
     #  request.env['rack.attack.match_type'],
