@@ -7,7 +7,7 @@ import os
 import psycopg2
 
 w.start()
-engine = create_engine('postgresql+psycopg2://chesp:Chesp2021@postgres.ripple-tech.com:5432/panda_quant',echo=True,client_encoding='utf8')
+engine = create_engine('postgresql+psycopg2://chesp:@postgres.ripple-tech.com:5432/panda_quant',echo=True,client_encoding='utf8')
 
 dates = w.tdays("1990-01-01")
 
